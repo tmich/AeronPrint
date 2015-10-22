@@ -1,5 +1,9 @@
 #pragma once
 
+/***
+	http://www.cplusplus.com/articles/jL18T05o/
+***/
+
 //OS Headers
 #include <Windows.h>
 #include "sqlite3.h"
