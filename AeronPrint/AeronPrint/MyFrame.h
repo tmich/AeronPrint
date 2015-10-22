@@ -8,11 +8,13 @@
 #endif
 
 #include "OrderListCtrl.h"
+#include "order_service.h"
+#include <vector>
 
 class MyFrame : public wxFrame
 {
 public:
-	MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size);
+	MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size);
 
 	OrderListCtrl *m_listCtrl;
 	wxPanel *m_panel;

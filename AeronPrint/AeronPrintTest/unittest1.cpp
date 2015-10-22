@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include <vector>
 #include <CppUnitTest.h>
-#include "..\AeronPrint\AeronClient.h"
-#include "..\AeronPrint\Order.h"
+#include "..\AeronPrint\aeron_client.h"
+#include "..\AeronPrint\order.h"
+#include "..\AeronPrint\order_service.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -11,12 +13,19 @@ namespace AeronPrintTest
 	{
 	public:
 		
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(AeronClientTest)
 		{
-			AeronClient cl;
-			auto order = cl.GetOrder(1);
-			Assert::IsNotNull(order);
+			AeronClient client;
+			auto task = client.GetAll(1);
+			auto orders = task.get();
+			Assert::IsTrue(orders.size() > 0);
 		}
 
+		TEST_METHOD(OrderServiceShouldReturnLastOrders)
+		{
+			OrderService service;
+			auto orders = service.GetLastOrders();
+			Assert::IsTrue(orders.size() > 0);
+		}
 	};
 }

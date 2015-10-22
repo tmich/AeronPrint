@@ -6,7 +6,7 @@ wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
 	EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
 wxEND_EVENT_TABLE()
 
-MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
+MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(NULL, wxID_ANY, title, pos, size)
 {
 	wxMenu *menuFile = new wxMenu;
@@ -35,11 +35,23 @@ MyFrame::MyFrame(const wxString& title, const wxPoint& pos, const wxSize& size)
 	m_listCtrl->SetColumnWidth(1, wxLIST_AUTOSIZE_USEHEADER);
 	m_listCtrl->Show();
 
-	long list_index = m_listCtrl->InsertItem(m_listCtrl->GetItemCount(), wxT("1"));
+	OrderService orderService;
+	auto orders = orderService.GetLastOrders();
+
+	for each (Order o in orders)
+	{
+		// col 1: Id
+		long list_index = m_listCtrl->InsertItem(m_listCtrl->GetItemCount(), std::to_wstring(o.GetId()));
+
+		// col 2: Cliente
+		m_listCtrl->SetItem(list_index, 1, o.GetCustomerName());
+	}
+
+	/*long list_index = m_listCtrl->InsertItem(m_listCtrl->GetItemCount(), wxT("1"));
 	m_listCtrl->SetItem(list_index, 1, wxT("Bappo SrL"));
 
 	list_index = m_listCtrl->InsertItem(m_listCtrl->GetItemCount(), wxT("2"));
-	m_listCtrl->SetItem(list_index, 1, wxT("L'Officina del Pane SRL"));
+	m_listCtrl->SetItem(list_index, 1, wxT("L'Officina del Pane SRL"));*/
 	
 }
 void MyFrame::OnExit(wxCommandEvent& event)
@@ -51,6 +63,7 @@ void MyFrame::OnAbout(wxCommandEvent& event)
 	wxMessageBox("This is a wxWidgets' Hello world sample",
 		"About Hello World", wxOK | wxICON_INFORMATION);
 }
+
 void MyFrame::OnHello(wxCommandEvent& event)
 {
 	wxLogMessage("Hello world from wxWidgets!");

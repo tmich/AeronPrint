@@ -21,13 +21,31 @@
     <ClInclude Include="MyFrame.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Order.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="OrderListCtrl.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="AeronClient.h">
+    <ClInclude Include="order_generator.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Order.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="aeron_client.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="order_service.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="order_repository.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite_db.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +62,22 @@
     <ClCompile Include="OrderListCtrl.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="AeronClient.cpp">
+    <ClCompile Include="order_generator.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="aeron_client.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="order_service.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="order_repository.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite_db.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite3.c">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,20 +10,24 @@ public:
 	int GetId() { return mId; }
 	void SetId(int id) { mId = id; }
 
-	std::string GetCustomerName() { return mCustomerName; }
-	void SetCustomerName(std::string customerName) { mCustomerName = customerName; }
+	int GetRemoteId() { return mRemoteId; }
+	void SetRemoteId(int id) { mRemoteId = id; }
 
-	std::string GetCustomerCode() { return mCustomerCode; }
-	void SetCustomerCode(std::string customerCode) { mCustomerCode = customerCode; }
+	std::wstring GetCustomerName() { return mCustomerName; }
+	void SetCustomerName(std::wstring customerName) { mCustomerName = customerName; }
 
-	std::string GetNotes() { return mNotes; }
-	void SetNotes(std::string notes) { mNotes = notes; }
+	std::wstring GetCustomerCode() { return mCustomerCode; }
+	void SetCustomerCode(std::wstring customerCode) { mCustomerCode = customerCode; }
+
+	std::wstring GetCreationDate() { return mCreationDate; }
+	void SetCreationDate(std::wstring creationDate) { mCreationDate = creationDate; }
 	
 protected:
 	int mId;
-	std::string mCustomerName;
-	std::string mCustomerCode;
-	std::string mCreationDate;
-	std::string mNotes;
+	int mRemoteId;
+	std::wstring mCustomerName;
+	std::wstring mCustomerCode;
+	std::wstring mCreationDate;
+	std::wstring mNotes;
 };
 
