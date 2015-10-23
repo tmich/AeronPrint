@@ -24,7 +24,7 @@ namespace AeronPrintTest
 		TEST_METHOD(OrderServiceShouldReturnLastOrders)
 		{
 			OrderService service;
-			auto orders = service.GetLastOrders();
+			auto orders = service.GetAllOrders();
 			Assert::IsTrue(orders.size() > 0);
 		}
 	};

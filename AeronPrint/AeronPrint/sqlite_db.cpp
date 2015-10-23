@@ -33,6 +33,11 @@ bool   SQLiteDB::isConnected()
 	return m_bConnected;
 }
 
+SQLiteDB::operator sqlite3*() const
+{
+	return pSQLiteConn->pCon;
+}
+
 bool SQLiteDB::OpenConnection(string DatabaseName, string DatabaseDir)
 {
 	pSQLiteConn->SQLiteDatabaseName = DatabaseName;

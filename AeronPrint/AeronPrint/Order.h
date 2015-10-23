@@ -21,6 +21,9 @@ public:
 
 	std::wstring GetCreationDate() { return mCreationDate; }
 	void SetCreationDate(std::wstring creationDate) { mCreationDate = creationDate; }
+
+	bool IsRead() { return mRead; }
+	void IsRead(bool isRead) { mRead = isRead; }
 	
 protected:
 	int mId;
@@ -29,5 +32,6 @@ protected:
 	std::wstring mCustomerCode;
 	std::wstring mCreationDate;
 	std::wstring mNotes;
+	bool mRead;
 };
 

@@ -80,6 +80,8 @@ public:
 	/*Return TRUE if databse is connected else FALSE*/
 	bool  isConnected();
 
+	operator sqlite3*() const;
+
 
 protected:
 	/*SQLite Connection Object*/

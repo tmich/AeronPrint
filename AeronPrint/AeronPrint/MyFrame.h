@@ -22,6 +22,10 @@ private:
 	void OnHello(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
+	void OnSelectedItem(wxListEvent & event);
+	void OnCheckNew(wxCommandEvent&);
+
+	void updateList(const vector<Order>& orders);
 	
 	wxDECLARE_NO_COPY_CLASS(MyFrame);
 	wxDECLARE_EVENT_TABLE();

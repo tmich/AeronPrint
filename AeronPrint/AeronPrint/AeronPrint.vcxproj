@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="aeron_client.h" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="MyFrame.h" />
     <ClInclude Include="Order.h" />

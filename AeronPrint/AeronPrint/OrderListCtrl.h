@@ -19,7 +19,7 @@ public:
 
 	}
 
-	void OnActivated(wxListEvent& event);
+	//void OnActivated(wxListEvent& event);
 private:
 	long m_updated;
 

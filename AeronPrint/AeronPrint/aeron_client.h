@@ -21,4 +21,3 @@ public:
 	~AeronClient();
 	pplx::task<vector<Order>> GetAll(int lastId);
 };
-

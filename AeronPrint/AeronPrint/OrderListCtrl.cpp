@@ -1,8 +1,8 @@
 #include "OrderListCtrl.h"
 
 wxBEGIN_EVENT_TABLE(OrderListCtrl, wxListCtrl)
-	EVT_LIST_ITEM_ACTIVATED(LIST_CTRL, OrderListCtrl::OnActivated)
-	/*EVT_LIST_BEGIN_DRAG(LIST_CTRL, OrderListCtrl::OnBeginDrag)
+	/*EVT_LIST_ITEM_ACTIVATED(LIST_CTRL, OrderListCtrl::OnActivated)
+	EVT_LIST_BEGIN_DRAG(LIST_CTRL, OrderListCtrl::OnBeginDrag)
 	EVT_LIST_BEGIN_RDRAG(LIST_CTRL, MyListCtrl::OnBeginRDrag)
 	EVT_LIST_BEGIN_LABEL_EDIT(LIST_CTRL, MyListCtrl::OnBeginLabelEdit)
 	EVT_LIST_END_LABEL_EDIT(LIST_CTRL, MyListCtrl::OnEndLabelEdit)
@@ -30,9 +30,12 @@ wxBEGIN_EVENT_TABLE(OrderListCtrl, wxListCtrl)
 	EVT_RIGHT_DOWN(MyListCtrl::OnRightClick)*/
 wxEND_EVENT_TABLE()
 
-void OrderListCtrl::OnActivated(wxListEvent& event)
-{
-	wxMessageBox(event.GetText());
-	event.Veto();
-}
+//void OrderListCtrl::OnActivated(wxListEvent& event)
+//{
+//	//event.GetItem().SetBackgroundColour(wxColour(*wxWHITE));
+//	int idx = event.GetIndex();
+//	SetItemBackgroundColour(idx, wxColour(*wxWHITE));
+//	wxMessageBox(event.GetText());
+//	event.Veto();
+//}
 
