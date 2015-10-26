@@ -16,7 +16,8 @@ pplx::task<vector<Order>> AeronClient::GetAll(int lastId)
 	return pplx::create_task([lastId]
 	{
 		std::wstringstream ws;
-		ws << L"http://192.168.56.1:5000/api/v1.0/last_orders/" << lastId;
+		//ws << L"http://192.168.56.1:5000/api/v1.0/last_orders/" << lastId;
+		ws << L"http://localhost:5000/api/v1.0/last_orders/" << lastId;
 		http_client client(ws.str());
 
 		return client.request(methods::GET);

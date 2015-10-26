@@ -68,9 +68,14 @@ void SQLiteDB::BeginTransaction()
 	sqlite3_exec(pSQLiteConn->pCon, "BEGIN TRANSACTION", NULL, NULL, NULL);
 }
 
-void SQLiteDB::CommitTransection()
+void SQLiteDB::CommitTransaction()
 {
 	sqlite3_exec(pSQLiteConn->pCon, "COMMIT TRANSACTION", NULL, NULL, NULL);
+}
+
+void SQLiteDB::RollbackTransaction()
+{
+	sqlite3_exec(pSQLiteConn->pCon, "ROLLBACK TRANSACTION", NULL, NULL, NULL);
 }
 
 IResult*  SQLiteDB::ExecuteSelect(const char *Query)

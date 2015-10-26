@@ -88,13 +88,13 @@ void OrderService::CheckNewOrders()
 		throw;
 	}
 
-	repo.SaveAll(orders);
+	repo.AddAll(orders);
 }
 
 void OrderService::SaveOrders(vector<Order> & orders)
 {
 	OrderRepository repo;
-	repo.SaveAll(orders);
+	repo.AddAll(orders);
 }
 
 void OrderService::Save(Order order)

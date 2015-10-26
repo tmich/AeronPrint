@@ -64,7 +64,8 @@ public:
 	/*Query Wrapper*/
 	/*For large insert operation Memory Insert option for SQLLITE dbJournal*/
 	void BeginTransaction();
-	void CommitTransection();
+	void CommitTransaction();
+	void RollbackTransaction();
 
 	/*This Method called when SELECT Query to be excuted.
 	Return RESULTSET class pointer on success else NULL of failed*/

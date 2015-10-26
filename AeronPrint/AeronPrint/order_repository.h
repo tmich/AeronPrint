@@ -1,6 +1,6 @@
 #pragma once
 #include "order.h"
-//#include "sqlite_db.h"
+#include "sqlite_db.h"
 #include "sqlite3.h"
 #include "constants.h"
 #include <string>
@@ -16,9 +16,12 @@ public:
 	~OrderRepository();
 
 	void Add(Order & order);
+	void Add(sqlite3 * db, Order & order);
+	void AddAll(std::vector<Order> & orders);
+
 	Order Get(int id);
 	std::vector<Order> GetAll();
-	void SaveAll(std::vector<Order> & orders);
+	
 	void Remove(int id);
 
 	void Update(Order order);

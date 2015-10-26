@@ -152,6 +152,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="MyFrame.h" />
+    <ClInclude Include="MyPrintout.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderListCtrl.h" />
     <ClInclude Include="order_generator.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="aeron_client.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="MyFrame.cpp" />
+    <ClCompile Include="MyPrintout.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="OrderListCtrl.cpp" />
     <ClCompile Include="order_generator.cpp" />
