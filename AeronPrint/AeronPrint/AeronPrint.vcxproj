@@ -152,7 +152,6 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="MyFrame.h" />
-    <ClInclude Include="MyPrintout.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderListCtrl.h" />
     <ClInclude Include="order_generator.h" />
@@ -161,12 +160,12 @@
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite3ext.h" />
     <ClInclude Include="sqlite_db.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aeron_client.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="MyFrame.cpp" />
-    <ClCompile Include="MyPrintout.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="OrderListCtrl.cpp" />
     <ClCompile Include="order_generator.cpp" />
@@ -174,6 +173,7 @@
     <ClCompile Include="order_service.cpp" />
     <ClCompile Include="sqlite3.c" />
     <ClCompile Include="sqlite_db.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

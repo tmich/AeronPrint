@@ -1,7 +1,7 @@
 #pragma once
 #include "order.h"
 #include "sqlite_db.h"
-#include "sqlite3.h"
+//#include "sqlite3.h"
 #include "constants.h"
 #include <string>
 #include <exception>
@@ -16,7 +16,7 @@ public:
 	~OrderRepository();
 
 	void Add(Order & order);
-	void Add(sqlite3 * db, Order & order);
+	void Add(SQLiteDB & db, Order & order);
 	void AddAll(std::vector<Order> & orders);
 
 	Order Get(int id);
@@ -29,12 +29,11 @@ public:
 	int GetMaxRemoteId();
 private:
 	bool exists(Order order);
-	Order build(sqlite3_stmt * statement);
-	std::string to_string(std::wstring s);
-	std::string to_string(const unsigned char * s);
-	std::wstring s2ws(const std::string& str);
+	Order build(IResult * res);
+
+	void addItem(SQLiteDB & db, OrderItem & item, int orderId);
 
 	//SQLiteDB sqlite;
-	sqlite3 * sqlite;
+	//sqlite3 * sqlite = nullptr;
 };
 

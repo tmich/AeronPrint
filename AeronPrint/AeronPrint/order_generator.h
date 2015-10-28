@@ -5,8 +5,6 @@
 
 using namespace web;
 
-//enum FieldValue { Id, CustomerCode, CustomerName, Notes };
-
 class OrderGenerator
 {
 public:

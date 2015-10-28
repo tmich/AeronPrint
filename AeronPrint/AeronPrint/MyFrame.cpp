@@ -11,13 +11,14 @@ wxEND_EVENT_TABLE()
 MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
 	: wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
-	m_canvas = nullptr;
-	m_previewModality = wxPreviewFrame_AppModal;
-
 	wxMenu *menuFile = new wxMenu;
-	menuFile->Append(wxID_PREVIEW, "&Anteprima di stampa\tCtrl-P", "Anteprima");
+
+	mnuPrint = new wxMenuItem(menuFile, wxID_PREVIEW, "&Anteprima di stampa\tCtrl-P", "Antemprima di Stampa");
+	mnuPrint->Enable(false);
+	menuFile->Append(mnuPrint);
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);
+
 	wxMenu *menuHelp = new wxMenu;
 	menuHelp->Append(wxID_ABOUT);
 	wxMenuBar *menuBar = new wxMenuBar;
@@ -39,7 +40,10 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	/*btnCheckNew->Bind(wxEVT_BUTTON, [=](wxCommandEvent& event) {
 		OnCheckNew(event);
 	});*/
-
+	
+	// Stampa
+	m_Prn = new wxHtmlEasyPrinting(_("Easy Printing Demo"), this);
+	
 	btnCheckNew->Bind(wxEVT_BUTTON, &MyFrame::OnCheckNew, this);
 	btnCheckNew->Show();
 
@@ -61,16 +65,6 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	{
 		wxMessageBox(exc.what(), L"Errore");
 	}
-
-	// create the canvas
-	// -----------------
-
-	m_canvas = new MyCanvas(this, wxPoint(0, 0), wxSize(100, 100),
-		wxRETAINED | wxHSCROLL | wxVSCROLL);
-
-	// Give it scrollbars: the virtual canvas is 20 * 50 = 1000 pixels in each direction
-	m_canvas->SetScrollbars(20, 20, 50, 50);
-	
 }
 
 void MyFrame::OnExit(wxCommandEvent& event)
@@ -92,14 +86,27 @@ void MyFrame::OnSelectedItem(wxListEvent& event)
 	{
 		int orderId = atoi(event.GetText());
 
-		// TODO: stampa
-		wxMessageBox(event.GetText());
-
 		OrderService orderService;
 		Order order = orderService.GetOrderById(orderId);
 		order.IsRead(true);
 		orderService.Save(order);
 		m_listCtrl->SetItemBackgroundColour(idx, wxColour(*wxWHITE));
+
+		// TODO: stampa
+		std::wostringstream wss, txt;
+		wss << "Stampa ordine n. " << orderId << " (@PAGENUM@/@PAGESCNT@)<hr>";
+		m_Prn->SetHeader(wss.str(), wxPAGE_ALL);
+
+		txt << "<h1>" << order.GetCustomerName() << " [" << order.GetCustomerCode() << "]" << "</h1>";
+		txt << "<ul>";
+		for (auto & item : order.Items)
+		{
+			txt << "<li>" << item.GetName() << "</li>";
+		}
+		txt << "</ul>";
+		m_Prn->PreviewText(txt.str());
+		//wxMessageBox(event.GetText());
+
 		event.Veto();
 	}
 	catch (const DatabaseException& db_exception)
@@ -149,25 +156,7 @@ void MyFrame::OnCheckNew(wxCommandEvent &)
 
 void MyFrame::OnPrintPreview(wxCommandEvent& WXUNUSED(event))
 {
-	// Pass two printout objects: for preview, and possible printing.
-	MyApp * app = dynamic_cast<MyApp*>(&wxApp());
-	auto printData = app->GetPrintData();
-	wxPrintDialogData printDialogData(*printData);
-	wxPrintout * myprintout = new MyPrintout(this);
-	wxPrintPreview *preview =
-		new wxPrintPreview(myprintout, myprintout, &printDialogData);
-	if (!preview->IsOk())
-	{
-		delete preview;
-		wxLogError(wxT("There was a problem previewing.\nPerhaps your current printer is not set correctly?"));
-		return;
-	}
-
-	wxPreviewFrame *frame =
-		new wxPreviewFrame(preview, this, wxT("Demo Print Preview"), wxPoint(100, 100), wxSize(600, 650));
-	frame->Centre(wxBOTH);
-	frame->InitializeWithModality(m_previewModality);
-	frame->Show();
+	m_Prn->PreviewText("<h1>Prova</h1>");
 }
 
 void MyFrame::updateList(const vector<Order>& orders)
@@ -221,28 +210,12 @@ void MyFrame::updateList(const vector<Order>& orders)
 	}
 }
 
+MyFrame::~MyFrame()
+{
+	wxDELETE(m_Prn);
+}
+
 void MyFrame::OnHello(wxCommandEvent& event)
 {
 	wxLogMessage("Hello world from wxWidgets!");
-}
-
-// ----------------------------------------------------------------------------
-// MyCanvas
-// ----------------------------------------------------------------------------
-
-wxBEGIN_EVENT_TABLE(MyCanvas, wxScrolledWindow)
-//  EVT_PAINT(MyCanvas::OnPaint)
-wxEND_EVENT_TABLE()
-
-MyCanvas::MyCanvas(MyFrame *frame, const wxPoint&pos, const wxSize&size, long style)
-	: wxScrolledWindow(frame, wxID_ANY, pos, size, style)
-{
-	SetBackgroundColour(*wxWHITE);
-}
-
-//void MyCanvas::OnPaint(wxPaintEvent& WXUNUSED(evt))
-void MyCanvas::OnDraw(wxDC& dc)
-{
-	//wxPaintDC dc(this);
-	wxGetApp().Draw(dc);
 }

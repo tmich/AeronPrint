@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include "sqlite3.h"
 #include <string>
+#include "constants.h"
 
 //#pragma comment (lib,".\\SQLite\\sqlite3.lib")
 
@@ -55,33 +56,32 @@ public:
 	~SQLiteDB();
 
 	/*Open Connection*/
-	bool OpenConnection(string DatabaseName, string DatabaseDir);
+	virtual bool OpenConnection(string DatabaseName, string DatabaseDir);
 
 
 	/*Close Connection*/
-	void CloseConnection();
+	virtual void CloseConnection();
 
 	/*Query Wrapper*/
 	/*For large insert operation Memory Insert option for SQLLITE dbJournal*/
-	void BeginTransaction();
-	void CommitTransaction();
-	void RollbackTransaction();
-
+	virtual void BeginTransaction();
+	virtual void CommitTransaction();
+	virtual void RollbackTransaction();
 	/*This Method called when SELECT Query to be excuted.
 	Return RESULTSET class pointer on success else NULL of failed*/
-	IResult*  ExecuteSelect(const char *Query);
+	virtual IResult*  ExecuteSelect(const char *Query);
 
 	/*This Method called when INSERT/DELETE/UPDATE Query to be excuted.
 	Return UINT count of effected data on success*/
-	uint32_t    Execute(const char *Query);
+	virtual uint32_t    Execute(const char *Query);
 
 	/*Get Last Error of excution*/
-	string GetLastError();
+	virtual string GetLastError();
 
 	/*Return TRUE if databse is connected else FALSE*/
-	bool  isConnected();
+	virtual bool  isConnected();
 
-	operator sqlite3*() const;
+	virtual operator sqlite3*() const;
 
 
 protected:
@@ -124,5 +124,15 @@ private:
 
 	/*RELEASE all result set as well as RESET all data*/
 	void Release();
+
+};
+
+class MyDb : public SQLiteDB
+{
+public:
+	MyDb() : SQLiteDB()
+	{
+		OpenConnection(DATABASE_NAME, DATABASE_DIR);
+	}
 
 };
