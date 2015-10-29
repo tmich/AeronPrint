@@ -1,152 +1,202 @@
 #include "sqlite_db.h"
 
+using namespace sqlite;
 
-SQLiteDB::SQLiteDB()
+/*********************
+*	Connection
+*********************/
+Connection::Connection()
 {
-	m_bConnected = false;
-	pSQLiteConn = new SQLITECONNECTIONOBJECT();
-	Sync = new SyncDB();
 }
 
-
-SQLiteDB::~SQLiteDB()
+void Connection::Open(std::string databaseName)
 {
-	CloseConnection();
-	delete pSQLiteConn;
-	delete Sync;
-}
-
-
-void SQLiteDB::CloseConnection()
-{
-	if (pSQLiteConn->pCon)
-		sqlite3_close(pSQLiteConn->pCon);
-}
-
-string SQLiteDB::GetLastError()
-{
-	return m_strLastError;
-}
-
-bool   SQLiteDB::isConnected()
-{
-	return m_bConnected;
-}
-
-SQLiteDB::operator sqlite3*() const
-{
-	return pSQLiteConn->pCon;
-}
-
-bool SQLiteDB::OpenConnection(string DatabaseName, string DatabaseDir)
-{
-	pSQLiteConn->SQLiteDatabaseName = DatabaseName;
-	pSQLiteConn->SQLiteDBPath = DatabaseDir;
-
-	m_bConnected = true;
-
-	string db = pSQLiteConn->SQLiteDatabaseName;
-	string dir = pSQLiteConn->SQLiteDBPath;
-	string path = dir.append(db);
-
-	int rc = sqlite3_open(path.c_str(), &(pSQLiteConn->pCon));
-
-	m_strLastError = (string)sqlite3_errmsg(pSQLiteConn->pCon);
-
-	if (!rc)
+	sqlite3_initialize();
+	int rc = sqlite3_open_v2(databaseName.c_str(), &db_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+	if (SQLITE_OK != rc)
 	{
-		if (m_strLastError.find("not an error") == string::npos)
-			m_bConnected = false;
-	}
-
-
-	return m_bConnected;
-}
-
-void SQLiteDB::BeginTransaction()
-{
-	sqlite3_exec(pSQLiteConn->pCon, "BEGIN TRANSACTION", NULL, NULL, NULL);
-}
-
-void SQLiteDB::CommitTransaction()
-{
-	sqlite3_exec(pSQLiteConn->pCon, "COMMIT TRANSACTION", NULL, NULL, NULL);
-}
-
-void SQLiteDB::RollbackTransaction()
-{
-	sqlite3_exec(pSQLiteConn->pCon, "ROLLBACK TRANSACTION", NULL, NULL, NULL);
-}
-
-IResult*  SQLiteDB::ExecuteSelect(const char *Query)
-{
-	if (!isConnected())
-		return NULL;
-
-	Sync->LockDB();
-
-	if (sqlite3_prepare_v2(pSQLiteConn->pCon, Query, -1, &pSQLiteConn->pRes, NULL) != SQLITE_OK)
-	{
-		m_strLastError = sqlite3_errmsg(pSQLiteConn->pCon);
-		sqlite3_finalize(pSQLiteConn->pRes);
-		Sync->UnLockDB();
-		return NULL;
-	}
-	else
-	{
-		m_iColumnCount = sqlite3_column_count(pSQLiteConn->pRes);
-		IResult *ires = this;
-		return ires;
+		throw SqliteException(sqlite3_errstr(rc));
 	}
 }
 
-uint32_t SQLiteDB::Execute(const char *Query)
+void Connection::Close()
 {
-	if (!isConnected())
-		return NULL;
-	m_strLastError = "";
+	int rc = sqlite3_close_v2(db_);
 
-	char* err = "";
-
-	if (sqlite3_exec(pSQLiteConn->pCon, Query, NULL, 0, &err) != SQLITE_OK)
+	if (SQLITE_OK != rc)
 	{
-		m_strLastError = sqlite3_errmsg(pSQLiteConn->pCon);
-		return 0;
+		throw SqliteException(sqlite3_errstr(rc));
 	}
-	return sqlite3_total_changes(pSQLiteConn->pCon);
+
+	db_ = nullptr;
 }
 
-
-/*Result Set Definations*/
-int	SQLiteDB::GetColumnCount()
+int Connection::Execute(std::string command)
 {
-	return m_iColumnCount;
+	sqlite3_stmt * stmt;
+	int rc = sqlite3_prepare_v2(db_, command.c_str(), command.size(), &stmt, nullptr);
+
+	if (SQLITE_OK != rc)
+	{
+		throw SqliteException(sqlite3_errstr(rc));
+	}
+
+	int errcode = sqlite3_step(stmt);
+
+	if (SQLITE_DONE != errcode)
+	{
+		throw SqliteException(sqlite3_errstr(errcode));
+	}
+
+	int rf = sqlite3_finalize(stmt);
+
+	if (SQLITE_OK != rf)
+	{
+		throw SqliteException(sqlite3_errstr(rf));
+	}
+
+	return sqlite3_changes(db_);
 }
 
-const char* SQLiteDB::NextColumnName(int iClmnCount)
+//Cursor Connection::ExecuteQuery(std::string query)
+//{
+//	/*sqlite3_stmt * stmt;
+//	int rc = sqlite3_prepare_v2(db_, query.c_str(), query.size(), &stmt, nullptr);
+//
+//	if (SQLITE_OK != rc)
+//	{
+//	throw SqliteException(sqlite3_errstr(rc));
+//	}*/
+//
+//	return Cursor(db_, query);
+//}
+
+long long int Connection::GetLastInsertRowid()
 {
-	if (iClmnCount > m_iColumnCount)
-		return "";
-	return sqlite3_column_name(pSQLiteConn->pRes, iClmnCount);
+	return sqlite3_last_insert_rowid(db_);
 }
 
-bool SQLiteDB::Next()
+Transaction Connection::BeginTransaction()
 {
-	return (sqlite3_step(pSQLiteConn->pRes) == SQLITE_ROW) ? true : false;
+	int rc = sqlite3_exec(db_, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
+
+	if (SQLITE_OK != rc)
+	{
+		throw SqliteException(sqlite3_errstr(rc));
+	}
+
+	return Transaction{ db_ };
 }
 
-const char*  SQLiteDB::ColumnData(int clmNum)
+Connection::~Connection()
 {
-	if (clmNum > m_iColumnCount)
-		return "";
-	return ((const char*)sqlite3_column_text(pSQLiteConn->pRes, clmNum));
+	Close();
 }
 
-void SQLiteDB::Release()
+/*******************
+*	Cursor
+********************/
+
+Cursor::Cursor()
 {
-	sqlite3_finalize(pSQLiteConn->pRes);
-	m_iColumnCount = 0;
-	m_strLastError = "";
-	Sync->UnLockDB();
 }
 
+Cursor::Cursor(sqlite3 * db, std::string query) : db_{ db }
+{
+	int rc = sqlite3_prepare_v2(db_, query.c_str(), query.size(), &stmt_, nullptr);
+
+	if (SQLITE_OK != rc)
+	{
+		throw SqliteException(sqlite3_errstr(rc));
+	}
+}
+
+Cursor::Cursor(sqlite3_stmt * stmt) : stmt_{ stmt }
+{
+}
+
+bool Cursor::Next()
+{
+	auto rc = sqlite3_step(stmt_);
+	return rc == SQLITE_ROW;
+}
+
+int Cursor::GetInt(int columnIndex)
+{
+	return sqlite3_column_int(stmt_, columnIndex);
+}
+
+std::string Cursor::GetText(int columnIndex)
+{
+	return std::string(reinterpret_cast<const char *>(sqlite3_column_text(stmt_, columnIndex)));
+}
+
+double Cursor::GetDouble(int columnIndex)
+{
+	return sqlite3_column_double(stmt_, columnIndex);
+}
+
+Cursor::~Cursor()
+{
+	sqlite3_reset(stmt_);
+	sqlite3_finalize(stmt_);
+	stmt_ = nullptr;
+}
+
+/*********************
+*	Transaction
+*********************/
+Transaction::Transaction(sqlite3 * db) : db_(db)
+{
+	pending = true;
+}
+
+int Transaction::Execute(std::string command)
+{
+	sqlite3_stmt * stmt;
+	int rc = sqlite3_prepare_v2(db_, command.c_str(), command.size(), &stmt, nullptr);
+
+	if (SQLITE_OK != rc)
+	{
+		throw SqliteException(sqlite3_errstr(rc));
+	}
+
+	int errcode = sqlite3_step(stmt);
+
+	if (SQLITE_DONE != errcode)
+	{
+		throw SqliteException(sqlite3_errstr(errcode));
+	}
+
+	int rf = sqlite3_finalize(stmt);
+
+	if (SQLITE_OK != rf)
+	{
+		throw SqliteException(sqlite3_errstr(rf));
+	}
+
+	return sqlite3_changes(db_);
+}
+
+long long int Transaction::GetLastInsertRowid()
+{
+	return sqlite3_last_insert_rowid(db_);
+}
+
+void Transaction::Commit()
+{
+	sqlite3_exec(db_, "COMMIT TRANSACTION", nullptr, nullptr, nullptr);
+	pending = false;
+}
+
+void Transaction::Rollback()
+{
+	sqlite3_exec(db_, "ROLLBACK TRANSACTION", nullptr, nullptr, nullptr);
+	pending = false;
+}
+
+Transaction::~Transaction()
+{
+	if (pending)
+		Rollback();
+}

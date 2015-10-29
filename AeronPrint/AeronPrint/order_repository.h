@@ -1,7 +1,6 @@
 #pragma once
 #include "order.h"
 #include "sqlite_db.h"
-//#include "sqlite3.h"
 #include "constants.h"
 #include <string>
 #include <exception>
@@ -16,7 +15,6 @@ public:
 	~OrderRepository();
 
 	void Add(Order & order);
-	void Add(SQLiteDB & db, Order & order);
 	void AddAll(std::vector<Order> & orders);
 
 	Order Get(int id);
@@ -29,11 +27,23 @@ public:
 	int GetMaxRemoteId();
 private:
 	bool exists(Order order);
-	Order build(IResult * res);
+	void addWithinTransaction(sqlite::Transaction & trn, Order & order);
+	Order doMakeOrder(sqlite::Cursor crs);
+	void loadItemsForOrder(Order & order);
+	/*void addItemWithinTransaction(sqlite::Transaction & trn, OrderItem & item, int orderId);*/
+};
 
-	void addItem(SQLiteDB & db, OrderItem & item, int orderId);
+class OrderItemRepository
+{
+public:
+	OrderItemRepository();
+	~OrderItemRepository();
 
-	//SQLiteDB sqlite;
-	//sqlite3 * sqlite = nullptr;
+	void Add(sqlite::Transaction & trn, OrderItem & orderItem, int orderId);
+	void AddAll(sqlite::Transaction & trn, std::vector<OrderItem> & orderItems, int orderId);
+
+	std::vector<OrderItem> GetAll(int orderId);
+private:
+	OrderItem doMakeOrderItem(sqlite::Cursor crs);
 };
 

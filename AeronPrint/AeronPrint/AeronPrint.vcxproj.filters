@@ -39,7 +39,10 @@
     <ClInclude Include="order_repository.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite_db.h">
+    <ClInclude Include="constants.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="utils.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="sqlite3.h">
@@ -48,10 +51,7 @@
     <ClInclude Include="sqlite3ext.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="constants.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="utils.h">
+    <ClInclude Include="sqlite_db.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,13 +80,13 @@
     <ClCompile Include="order_repository.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="sqlite_db.cpp">
+    <ClCompile Include="utils.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="sqlite3.c">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="utils.cpp">
+    <ClCompile Include="sqlite_db.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

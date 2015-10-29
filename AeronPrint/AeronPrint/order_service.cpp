@@ -88,13 +88,27 @@ void OrderService::CheckNewOrders()
 		throw;
 	}
 
-	repo.AddAll(orders);
+	try
+	{
+		repo.AddAll(orders);
+	}
+	catch (const std::exception& exc)
+	{
+		throw DatabaseException(exc.what());
+	}
 }
 
 void OrderService::SaveOrders(vector<Order> & orders)
 {
 	OrderRepository repo;
-	repo.AddAll(orders);
+	try
+	{
+		repo.AddAll(orders);
+	}
+	catch (const std::exception& exc)
+	{
+		throw DatabaseException(exc.what());
+	}
 }
 
 void OrderService::Save(Order order)

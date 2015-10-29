@@ -1,138 +1,86 @@
 #pragma once
 
-/***
-	http://www.cplusplus.com/articles/jL18T05o/
-***/
-
-//OS Headers
-#include <Windows.h>
 #include "sqlite3.h"
+#include <exception>
 #include <string>
-#include "constants.h"
 
-//#pragma comment (lib,".\\SQLite\\sqlite3.lib")
-
-using namespace std;
-
-//Struct for Sync database for Multithreading
-typedef struct Sync
+namespace sqlite
 {
-	CRITICAL_SECTION _cs;
-	Sync() { ::InitializeCriticalSection(&_cs); }
-	void LockDB() { ::EnterCriticalSection(&_cs); }
-	void UnLockDB() { ::LeaveCriticalSection(&_cs); }
-	~Sync() { ::DeleteCriticalSection(&_cs); }
-} SyncDB;
-
-/*Interface class for Result data of query*/
-class IResult
-{
-public:
-	/*This function return of count of column
-	present in result set of last excueted query*/
-	virtual int	    GetColumnCount() = 0;
-
-	/*Get the next coloumn name*/
-	virtual const char* NextColumnName(int iClmnCount) = 0;
-
-	/*This function returns TRUE if still rows are
-	der in result set of last excueted query FALSE
-	if no row present*/
-	virtual bool  Next() = 0;
-
-	/*Get the next coloumn data*/
-	virtual const char*  ColumnData(int clmNum) = 0;
-
-	/*RELEASE all result set as well as RESET all data*/
-	virtual void Release() = 0;
-};
-
-//SQLite Wrapper Class
-class SQLiteDB : public IResult
-{
-
-public:
-	SQLiteDB();
-	~SQLiteDB();
-
-	/*Open Connection*/
-	virtual bool OpenConnection(string DatabaseName, string DatabaseDir);
-
-
-	/*Close Connection*/
-	virtual void CloseConnection();
-
-	/*Query Wrapper*/
-	/*For large insert operation Memory Insert option for SQLLITE dbJournal*/
-	virtual void BeginTransaction();
-	virtual void CommitTransaction();
-	virtual void RollbackTransaction();
-	/*This Method called when SELECT Query to be excuted.
-	Return RESULTSET class pointer on success else NULL of failed*/
-	virtual IResult*  ExecuteSelect(const char *Query);
-
-	/*This Method called when INSERT/DELETE/UPDATE Query to be excuted.
-	Return UINT count of effected data on success*/
-	virtual uint32_t    Execute(const char *Query);
-
-	/*Get Last Error of excution*/
-	virtual string GetLastError();
-
-	/*Return TRUE if databse is connected else FALSE*/
-	virtual bool  isConnected();
-
-	virtual operator sqlite3*() const;
-
-
-protected:
-	/*SQLite Connection Object*/
-	typedef struct SQLLITEConnection
+	/* Eccezione SQLite */
+	class SqliteException : public std::exception
 	{
-		string		 SQLiteDatabaseName;   //Database Name
-		string		 SQLiteDBPath;		   //Databse File Dir
-		sqlite3		 *pCon;				   //SQLite Connection Object
-		sqlite3_stmt *pRes;				   //SQLite statement object 
-	}SQLITECONNECTIONOBJECT;
+	public:
+		SqliteException(std::string message) : message_(message) {};
 
-	//SQLite Connection Details
-	SQLITECONNECTIONOBJECT	 *pSQLiteConn;
+		virtual const char * what() const override
+		{
+			return message_.c_str();
+		}
+	protected:
+		std::string message_;
+	};
 
-	/*Sync Database in Case of Multiple Threads using class object*/
-	SyncDB					 *Sync;
-
-	bool	m_bConnected;      /*Is Connected To DB*/
-	bool    m_bConsole;	       /*If Console Application*/
-	string  m_strLastError;    /*Last Error String*/
-	int	    m_iColumnCount;    /*No.Of Column in Result*/
-
-
-private:
-	/*This function return of count of column
-	present in result set of last excueted query*/
-	int	    GetColumnCount();
-
-	/*Get the next coloumn name*/
-	const char* NextColumnName(int iClmnCount);
-
-	/*This function returns TRUE if still rows are
-	der in result set of last excueted query FALSE
-	if no row present*/
-	bool  Next();
-
-	/*Get the next coloumn data*/
-	const char*  ColumnData(int clmNum);
-
-	/*RELEASE all result set as well as RESET all data*/
-	void Release();
-
-};
-
-class MyDb : public SQLiteDB
-{
-public:
-	MyDb() : SQLiteDB()
+	/* Classe che incapsula un cursore restituito da una query */
+	class Cursor
 	{
-		OpenConnection(DATABASE_NAME, DATABASE_DIR);
-	}
+	public:
+		Cursor();
+		Cursor(sqlite3 * db, std::string query);
+		Cursor(sqlite3_stmt * stmt);
+		~Cursor();
 
-};
+		bool Next();
+
+		int GetInt(int columnIndex);
+		std::string GetText(int columnIndex);
+		double GetDouble(int columnIndex);
+	private:
+		sqlite3_stmt * stmt_;
+		sqlite3 * db_;
+	};
+
+	/* Classe che incapsula una transaction. */
+	class Transaction
+	{
+	public:
+		Transaction(sqlite3 * db);
+		~Transaction();
+
+		void Commit();
+		void Rollback();
+
+		/* Esegue il comando (INSERT, UPDATE, DELETE) e torna il numero di righe modificate. */
+		int Execute(std::string command);
+
+		/* Ritorna l'ultimo rowid creato */
+		long long int GetLastInsertRowid();
+	protected:
+		bool pending;
+		sqlite3 * db_;
+	};
+
+	/* Classe che incapsula una connessione al db (RAII) */
+	class Connection
+	{
+	public:
+		Connection();
+		~Connection();
+
+		void Open(std::string databaseName);
+		void Close();
+
+		operator sqlite3 * () const { return db_; }
+
+		/* Esegue il comando (INSERT, UPDATE, DELETE) e torna il numero di righe modificate. */
+		int Execute(std::string command);
+
+		/* Ritorna l'ultimo rowid creato */
+		long long int GetLastInsertRowid();
+
+		//Cursor ExecuteQuery(std::string query);
+
+		Transaction BeginTransaction();
+	protected:
+		sqlite3 * db_{ nullptr };
+	};
+}

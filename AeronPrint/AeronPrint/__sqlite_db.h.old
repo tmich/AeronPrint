@@ -1,0 +1,136 @@
+#pragma once
+
+/***
+	http://www.cplusplus.com/articles/jL18T05o/
+***/
+
+//OS Headers
+#include <Windows.h>
+#include "sqlite3.h"
+#include <string>
+#include "constants.h"
+
+//#pragma comment (lib,".\\SQLite\\sqlite3.lib")
+
+using namespace std;
+
+//Struct for Sync database for Multithreading
+typedef struct Sync
+{
+	CRITICAL_SECTION _cs;
+	Sync() { ::InitializeCriticalSection(&_cs); }
+	void LockDB() { ::EnterCriticalSection(&_cs); }
+	void UnLockDB() { ::LeaveCriticalSection(&_cs); }
+	~Sync() { ::DeleteCriticalSection(&_cs); }
+} SyncDB;
+
+/*Interface class for Result data of query*/
+class IResult
+{
+public:
+	/*This function return of count of column
+	present in result set of last excueted query*/
+	virtual int	    GetColumnCount() = 0;
+
+	/*Get the next coloumn name*/
+	virtual const char* NextColumnName(int iClmnCount) = 0;
+
+	/*This function returns TRUE if still rows are
+	der in result set of last excueted query FALSE
+	if no row present*/
+	virtual bool  Next() = 0;
+
+	/*Get the next coloumn data*/
+	virtual const char*  ColumnData(int clmNum) = 0;
+
+	/*RELEASE all result set as well as RESET all data*/
+	virtual void Release() = 0;
+};
+
+//SQLite Wrapper Class
+class SQLiteDB : public IResult
+{
+
+public:
+	SQLiteDB();
+	virtual ~SQLiteDB();
+
+	/*Open Connection*/
+	virtual bool OpenConnection(string DatabaseName, string DatabaseDir);
+
+
+	/*Close Connection*/
+	virtual void CloseConnection();
+
+	/*Query Wrapper*/
+	/*For large insert operation Memory Insert option for SQLLITE dbJournal*/
+	virtual void BeginTransaction();
+	virtual void CommitTransaction();
+	virtual void RollbackTransaction();
+	/*This Method called when SELECT Query to be excuted.
+	Return RESULTSET class pointer on success else NULL of failed*/
+	virtual IResult*  ExecuteSelect(const char *Query);
+
+	/*This Method called when INSERT/DELETE/UPDATE Query to be excuted.
+	Return UINT count of effected data on success*/
+	virtual uint32_t    Execute(const char *Query);
+
+	/*Get Last Error of excution*/
+	virtual string GetLastError();
+
+	/*Return TRUE if databse is connected else FALSE*/
+	virtual bool  isConnected();
+
+	virtual operator sqlite3*() const;
+
+
+protected:
+	/*SQLite Connection Object*/
+	typedef struct SQLLITEConnection
+	{
+		string		 SQLiteDatabaseName;   //Database Name
+		string		 SQLiteDBPath;		   //Databse File Dir
+		sqlite3		 *pCon;				   //SQLite Connection Object
+		sqlite3_stmt *pRes;				   //SQLite statement object 
+	}SQLITECONNECTIONOBJECT;
+
+	//SQLite Connection Details
+	SQLITECONNECTIONOBJECT	 *pSQLiteConn;
+
+	/*Sync Database in Case of Multiple Threads using class object*/
+	SyncDB					 *Sync;
+
+	bool	m_bConnected;      /*Is Connected To DB*/
+	bool    m_bConsole;	       /*If Console Application*/
+	string  m_strLastError;    /*Last Error String*/
+	int	    m_iColumnCount;    /*No.Of Column in Result*/
+
+
+private:
+	/*This function return of count of column
+	present in result set of last excueted query*/
+	int	    GetColumnCount();
+
+	/*Get the next coloumn name*/
+	const char* NextColumnName(int iClmnCount);
+
+	/*This function returns TRUE if still rows are
+	der in result set of last excueted query FALSE
+	if no row present*/
+	bool  Next();
+
+	/*Get the next coloumn data*/
+	const char*  ColumnData(int clmNum);
+
+	/*RELEASE all result set as well as RESET all data*/
+	void Release();
+
+};
+
+//class MyDb : public SQLiteDB
+//{
+//public:
+//	MyDb();
+//	~MyDb();
+//
+//};

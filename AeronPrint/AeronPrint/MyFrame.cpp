@@ -1,14 +1,6 @@
 #include "MyFrame.h"
 
-wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
-	EVT_MENU(ID_Hello, MyFrame::OnHello)
-	EVT_MENU(wxID_PREVIEW, MyFrame::OnPrintPreview)
-	EVT_MENU(wxID_EXIT, MyFrame::OnExit)
-	EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-	EVT_LIST_ITEM_ACTIVATED(LIST_CTRL, MyFrame::OnSelectedItem)
-wxEND_EVENT_TABLE()
-
-MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size)
+MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size) 
 	: wxFrame(nullptr, wxID_ANY, title, pos, size)
 {
 	wxMenu *menuFile = new wxMenu;
@@ -47,6 +39,7 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	btnCheckNew->Bind(wxEVT_BUTTON, &MyFrame::OnCheckNew, this);
 	btnCheckNew->Show();
 
+	/*
 	OrderService orderService;
 
 	try
@@ -65,6 +58,7 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	{
 		wxMessageBox(exc.what(), L"Errore");
 	}
+	*/
 }
 
 void MyFrame::OnExit(wxCommandEvent& event)
@@ -219,3 +213,11 @@ void MyFrame::OnHello(wxCommandEvent& event)
 {
 	wxLogMessage("Hello world from wxWidgets!");
 }
+
+wxBEGIN_EVENT_TABLE(MyFrame, wxFrame)
+	EVT_MENU(ID_Hello, MyFrame::OnHello)
+	EVT_MENU(wxID_PREVIEW, MyFrame::OnPrintPreview)
+	EVT_MENU(wxID_EXIT, MyFrame::OnExit)
+	EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
+	EVT_LIST_ITEM_ACTIVATED(LIST_CTRL, MyFrame::OnSelectedItem)
+wxEND_EVENT_TABLE()

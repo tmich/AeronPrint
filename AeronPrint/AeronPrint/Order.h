@@ -5,6 +5,8 @@
 class OrderItem
 {
 public:
+	OrderItem();
+
 	int GetId() { return mId; }
 	void SetId(int id) { mId = id; }
 
@@ -23,10 +25,15 @@ public:
 	int GetRemoteId() { return mRemoteId; }
 	void SetRemoteId(int id) { mRemoteId = id; }
 
+	int GetOrderId() { return mOrderId; }
+	void SetOrderId(int orderId) { mOrderId = orderId; }
+
+
 protected:
 	int mId;
 	int mRemoteId;
 	int mQty;
+	int mOrderId;
 	std::wstring mCode;
 	std::wstring mName;
 	std::wstring mNotes;

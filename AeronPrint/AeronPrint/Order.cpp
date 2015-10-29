@@ -13,3 +13,8 @@ Order::Order()
 Order::~Order()
 {
 }
+
+OrderItem::OrderItem()
+{
+	mId = 0;
+}

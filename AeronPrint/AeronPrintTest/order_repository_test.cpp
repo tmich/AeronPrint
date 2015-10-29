@@ -27,5 +27,12 @@ namespace AeronPrintTest
 
 			repo.Add(o);
 		}
+
+		TEST_METHOD(GetOrderById)
+		{
+			OrderRepository repo;
+			auto o = repo.Get(repo.GetMaxRemoteId());
+			Assert::IsFalse(o.GetRemoteId() == 0);
+		}
 	};
 }

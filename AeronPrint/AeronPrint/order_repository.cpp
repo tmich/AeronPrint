@@ -1,117 +1,92 @@
 #include "order_repository.h"
 #include "utils.h"
 
+/****************************
+*
+*       OrderRepository
+*
+****************************/
+
 OrderRepository::OrderRepository()
 {
-	//sqlite.OpenConnection(DATABASE_NAME, DATABASE_DIR);
-
-	std::stringstream create;
-
-	create << "create table if not exists orders" <<
-		"(id INTEGER PRIMARY KEY, customer_code TEXT NOT NULL, customer_name TEXT NOT NULL, creation_date TEXT NOT NULL, " <<
-		"remote_id INTEGER NOT NULL UNIQUE, read INTEGER DEFAULT(0));";
-
-	create << "create table if not exists order_items" <<
-		"(id INTEGER PRIMARY KEY, order_id INTEGER, code TEXT NOT NULL, name TEXT NOT NULL, qty INTEGER, notes TEXT, " <<
-		"remote_id INTEGER NOT NULL UNIQUE, FOREIGN KEY(order_id) REFERENCES orders(id));";
-	
-	MyDb db;
-	//sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-	//int errcode = sqlite3_exec(sqlite, create.str().c_str(), nullptr, nullptr, nullptr);
-	int errcode = db.Execute(create.str().c_str());
-
-	if (db.GetLastError() != "")
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+	try
 	{
-		throw std::exception(db.GetLastError().c_str());
+		db.Execute("create table if not exists orders (id integer primary key, customer_code text not null, customer_name text not null, creation_date text not null, remote_id integer, read integer);");
 	}
-
-	//sqlite3_close_v2(sqlite);
+	catch (sqlite::SqliteException& exc)
+	{
+		throw std::exception(exc.what());
+	}
 }
 
 OrderRepository::~OrderRepository()
 {
-	//sqlite3_close_v2(sqlite);
 }
 
 void OrderRepository::Add(Order & order)
 {
-	if (!exists(order))
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+	auto trn = db.BeginTransaction();
+	try
 	{
-		//sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-		MyDb db;
-		Add(db, order);
-		//sqlite3_close_v2(sqlite);
+		addWithinTransaction(trn, order);
+		trn.Commit();
+	}
+	catch (sqlite::SqliteException& exc)
+	{
+		trn.Rollback();
+		throw std::exception(exc.what());
 	}
 }
 
-void OrderRepository::Add(SQLiteDB & db, Order & order)
+void OrderRepository::addWithinTransaction(sqlite::Transaction & trn, Order & order)
 {
-	//sqlite3_stmt *statement;
-	//int err_code = 0;
-	
-	/*if (sqlite3_prepare_v2(db, insert.c_str(), insert.size(), &statement, nullptr) == SQLITE_OK)
-	{*/
-		auto customerCode = Utils::to_string(order.GetCustomerCode());
-		auto customerName = Utils::to_string(order.GetCustomerName());
-		auto creationDate = Utils::to_string(order.GetCreationDate());
-		auto remoteId = order.GetRemoteId();
+	OutputDebugStringW(L"\tOrderRepository::Add(db, order)\n");
+	auto customerCode = Utils::to_string(order.GetCustomerCode());
+	auto customerName = Utils::to_string(order.GetCustomerName());
+	auto creationDate = Utils::to_string(order.GetCreationDate());
+	auto remoteId = order.GetRemoteId();
 
-		std::wostringstream insert;
-		insert << "insert into orders(customer_code, customer_name, creation_date, remote_id, read) values(" <<
-			Utils::ForSql(customerCode) << ", " << Utils::ForSql(customerName) << ", " << Utils::ForSql(creationDate) << 
-			", " << remoteId << ", " << order.IsRead() << ");";
+	std::wostringstream insert;
+	insert << "insert into orders(customer_code, customer_name, creation_date, remote_id, read) values(" <<
+		Utils::ForSql(customerCode) << ", " << Utils::ForSql(customerName) << ", " << Utils::ForSql(creationDate) << 
+		", " << remoteId << ", " << order.IsRead() << ");";
 
-		/*sqlite3_bind_text(statement, 1, customerCode.c_str(), customerCode.size(), SQLITE_STATIC);
-		sqlite3_bind_text(statement, 2, customerName.c_str(), customerName.size(), SQLITE_STATIC);
-		sqlite3_bind_text(statement, 3, creationDate.c_str(), creationDate.size(), SQLITE_STATIC);
-		sqlite3_bind_int(statement, 4, remoteId);
-		sqlite3_bind_int(statement, 5, order.IsRead());*/
+	int rows_affected = trn.Execute(Utils::to_string(insert.str()).c_str());
+	if (rows_affected == 1)
+	{
+		order.SetId(trn.GetLastInsertRowid());
 
-		//sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
-		/*err_code = sqlite3_step(statement);
-		sqlite3_finalize(statement);*/
-		//sqlite3_exec(db, "COMMIT TRANSACTION", nullptr, nullptr, nullptr);
-
-		int rows_affected = db.Execute(Utils::to_string(insert.str()).c_str());
-		if (1 != rows_affected)
-		{
-			auto err = db.GetLastError();
-			throw std::exception(err.c_str());
-		}
-
-		order.SetId(sqlite3_last_insert_rowid(db));
+		/*OrderItemRepository itemsRepo;
 
 		for (auto & orderItem : order.Items)
 		{
-			addItem(db, orderItem, order.GetId());
-		}
-	//}
-	/*else
-	{
-		auto err = sqlite3_errstr(sqlite3_errcode(sqlite));
-		throw std::exception(err);
-	}*/
+			itemsRepo.Add(trn, orderItem, order.GetId());
+		}*/
+	}
 }
 
 Order OrderRepository::Get(int id)
 {
 	Order order;
 	
-	std::stringstream select;
-	select << "select id, customer_code, customer_name, creation_date, remote_id, read from orders where id = " << id << " LIMIT 1";
+	std::stringstream select("select id, customer_code, customer_name, creation_date, remote_id, read from orders where id = ");
+	select << id << " LIMIT 1";
+	
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
 
-	/*sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-	sqlite3_stmt *statement;*/
+	sqlite::Cursor crs(db, select.str().c_str());
 
-	MyDb db;
-	auto res = db.ExecuteSelect(select.str().c_str());
-	if (res != nullptr)
+	if (crs.Next())
 	{
-		if (res->Next())
-		{
-			order = build(res);
-		}
+		order = doMakeOrder(crs);
 	}
+
+	loadItemsForOrder(order);
 
 	return order;
 }
@@ -119,45 +94,54 @@ Order OrderRepository::Get(int id)
 std::vector<Order> OrderRepository::GetAll()
 {
 	std::vector<Order> orders;
-	/*sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
+	
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
 
-	sqlite3_stmt *statement;
-	std::string query = "select id, customer_code, customer_name, creation_date, remote_id, read from orders;";
-	if (sqlite3_prepare_v2(sqlite, query.c_str(), query.size(), &statement, nullptr) == SQLITE_OK)
+	sqlite::Cursor crs(db, "select id, customer_code, customer_name, creation_date, remote_id, read from orders;");
+	
+	// carico gli ordini
+	while (crs.Next())
 	{
-		while (SQLITE_ROW == sqlite3_step(statement))
-		{
-			Order order = build(statement);
-			orders.push_back(order);
-		}
+		orders.push_back(doMakeOrder(crs));
 	}
-	sqlite3_finalize(statement);
-	sqlite3_close_v2(sqlite);*/
+
+	for (auto & order : orders)
+	{
+		loadItemsForOrder(order);
+	}
+	
+
 	return orders;
+}
+
+void OrderRepository::loadItemsForOrder(Order & order)
+{
+	OrderItemRepository itemsRepo;
+	auto items = itemsRepo.GetAll(order.GetId());
+	order.Items.assign(items.begin(), items.end());
 }
 
 void OrderRepository::AddAll(std::vector<Order> & orders)
 {
-	//sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-	//sqlite3_exec(sqlite, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
-	SQLiteDB db;
-	db.OpenConnection(DATABASE_NAME, DATABASE_DIR);
-	db.BeginTransaction();
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+
+	auto trn = db.BeginTransaction();
 
 	try
 	{
 		for (auto& order : orders)
 		{
-			Add(db, order);
+			addWithinTransaction(trn, order);
 		}
 
-		//sqlite3_exec(sqlite, "COMMIT TRANSACTION", nullptr, nullptr, nullptr);
-		db.CommitTransaction();
+		// TODO: aggiungere items
+		trn.Commit();
 	}
-	catch (const std::exception&)
+	catch (sqlite::SqliteException& exc)
 	{
-		//sqlite3_exec(sqlite, "ROLLBACK TRANSACTION", nullptr, nullptr, nullptr);
-		db.RollbackTransaction();
+		trn.Rollback();
 		throw;
 	}
 }
@@ -200,28 +184,25 @@ void OrderRepository::Update(Order order)
 int OrderRepository::GetMaxRemoteId()
 {
 	int max_id = 0;
-	/*sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
-
-	sqlite3_stmt *statement;
-	std::string query = "select max(remote_id) from orders;";
-	if (sqlite3_prepare_v2(sqlite, query.c_str(), query.size(), &statement, nullptr) == SQLITE_OK)
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+	sqlite::Cursor crs(db, "select max(remote_id) from orders;");
+	
+	if (crs.Next())
 	{
-		if (SQLITE_ROW == sqlite3_step(statement))
-		{
-			max_id = sqlite3_column_int(statement, 0);
-		}
+		max_id = crs.GetInt(0);
 	}
-	sqlite3_finalize(statement);
-	sqlite3_close_v2(sqlite);*/
+	
 	return max_id;
 }
 
 bool OrderRepository::exists(Order order)
 {
 	bool existing = false;
-	/*std::stringstream strm;
+	/*
+	std::stringstream strm;
 	strm << "select id from orders where remote_id = " << order.GetRemoteId() << " LIMIT 1";
-
+	
 	sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 	sqlite3_stmt *statement;
 
@@ -238,64 +219,105 @@ bool OrderRepository::exists(Order order)
 	return existing;
 }
 
-Order OrderRepository::build(IResult * res)
+Order OrderRepository::doMakeOrder(sqlite::Cursor crs)
 {
 	Order order;
-	auto id = atoi(res->ColumnData(0));
+	auto id = crs.GetInt(0);
 	order.SetId(id);
 
-	auto cc = res->ColumnData(1);
-	order.SetCustomerCode(Utils::s2ws(std::string(cc)));
-	order.SetCustomerName(Utils::s2ws(std::string(res->ColumnData(2))));
-	order.SetCreationDate(Utils::s2ws(std::string(res->ColumnData(3))));
-	order.SetRemoteId(atoi(res->ColumnData(4)));
-	order.IsRead(atoi(res->ColumnData(5)) == 1);
-
-	SQLiteDB db;
-	db.OpenConnection(DATABASE_NAME, DATABASE_DIR);
-	std::ostringstream sql;
-	sql << "select id, code, name, qty, notes, remote_id from order_items where order_id = " << id;
-	auto res2 = db.ExecuteSelect(sql.str().c_str());
-
-	if (res2 != nullptr)
-	{
-		while (res2->Next())
-		{
-			OrderItem itm;
-			itm.SetId(atoi(res2->ColumnData(0)));
-			itm.SetCode(Utils::s2ws(std::string(res2->ColumnData(1))));
-			itm.SetName(Utils::s2ws(std::string(res2->ColumnData(2))));
-			itm.SetQty(atoi(res2->ColumnData(3)));
-			itm.SetNotes(Utils::s2ws(std::string(res2->ColumnData(4))));
-			itm.SetRemoteId(atoi(res2->ColumnData(5)));
-			order.Items.push_back(itm);
-		}
-	}
-
+	order.SetCustomerCode(Utils::s2ws(crs.GetText(1)));
+	order.SetCustomerName(Utils::s2ws(crs.GetText(2)));
+	order.SetCreationDate(Utils::s2ws(crs.GetText(3)));
+	order.SetRemoteId(crs.GetInt(4));
+	order.IsRead(crs.GetInt(5) == 1);
+	
 	return order;
 }
 
 
 
-void OrderRepository::addItem(SQLiteDB & db, OrderItem & item, int orderId)
+/****************************
+ *
+ *   OrderItemRepository
+ *
+ ****************************/
+
+OrderItemRepository::OrderItemRepository()
+{
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+	try
+	{
+		db.Execute("create table order_items (id integer primary key, order_id integer, code text not null, name text not null, qty integer, notes text not null, remote_id integer);");
+	}
+	catch (sqlite::SqliteException& exc)
+	{
+		throw std::exception(exc.what());
+	}
+}
+
+OrderItemRepository::~OrderItemRepository()
+{
+}
+
+void OrderItemRepository::Add(sqlite::Transaction & trn, OrderItem & orderItem, int orderId)
 {
 	std::string code, name, notes;
-	code = Utils::to_string(item.GetCode());
-	name = Utils::to_string(item.GetName());
-	notes = Utils::to_string(item.GetNotes());
+	code = Utils::to_string(orderItem.GetCode());
+	name = Utils::to_string(orderItem.GetName());
+	notes = Utils::to_string(orderItem.GetNotes());
 
 	std::wostringstream insert;
 	insert << "insert into order_items (order_id, code, name, qty, notes, remote_id) values(" <<
-		orderId << ", " << Utils::ForSql(code) << ", " << Utils::ForSql(name) << ", " << item.GetQty() << 
-		", " << Utils::ForSql(notes) << ", " << item.GetRemoteId() << ");";
-		
-	int rows_affected = db.Execute(Utils::to_string(insert.str()).c_str());
+		orderId << ", " << Utils::ForSql(code) << ", " << Utils::ForSql(name) << ", " << orderItem.GetQty() <<
+		", " << Utils::ForSql(notes) << ", " << orderItem.GetRemoteId() << ");";
 
-	if (1 != rows_affected)
+	int rows_affected = trn.Execute(Utils::to_string(insert.str()).c_str());
+	orderItem.SetId(trn.GetLastInsertRowid());
+}
+
+void OrderItemRepository::AddAll(sqlite::Transaction & trn, std::vector<OrderItem>& orderItems, int orderId)
+{
+	for (auto & item : orderItems)
 	{
-		auto err = db.GetLastError();
-		throw std::exception(err.c_str());
+		Add(trn, item, orderId);
+	}
+}
+
+std::vector<OrderItem> OrderItemRepository::GetAll(int orderId)
+{
+	auto orderItems = std::vector<OrderItem>();
+
+	std::stringstream select;
+	select << "select id, code, name, qty, notes, remote_id, order_id from orders where order_id = " << orderId;
+
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+
+	sqlite::Cursor crs(db, select.str().c_str());
+
+	if (crs.Next())
+	{
+		orderItems.push_back(doMakeOrderItem(crs));
 	}
 
-	item.SetId(sqlite3_last_insert_rowid(db));
+	return orderItems;
+}
+
+OrderItem OrderItemRepository::doMakeOrderItem(sqlite::Cursor crs)
+{
+	OrderItem orderItem;
+
+	if (crs.Next())
+	{
+		orderItem.SetId(crs.GetInt(0));
+		orderItem.SetCode(Utils::s2ws(crs.GetText(1)));
+		orderItem.SetName(Utils::s2ws(crs.GetText(2)));
+		orderItem.SetQty(crs.GetInt(3));
+		orderItem.SetNotes(Utils::s2ws(crs.GetText(4)));
+		orderItem.SetRemoteId(crs.GetInt(5));
+		orderItem.SetOrderId(crs.GetInt(6));
+	}
+
+	return orderItem;
 }
