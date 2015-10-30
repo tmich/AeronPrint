@@ -15,7 +15,7 @@ public:
 	void CheckNewOrders();
 
 	void SaveOrders(vector<Order> & orders);
-	void Save(Order order);
+	void Save(Order & order);
 	Order GetOrderById(int id);
 private:
 	int getLastOrderRemoteId();

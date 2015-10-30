@@ -22,7 +22,7 @@ public:
 	
 	void Remove(int id);
 
-	void Update(Order order);
+	void Update(Order & order);
 	
 	int GetMaxRemoteId();
 private:

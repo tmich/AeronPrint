@@ -164,8 +164,32 @@ void OrderRepository::Remove(int id)
 {
 }
 
-void OrderRepository::Update(Order order)
+void OrderRepository::Update(Order & order)
 {
+	sqlite::Connection db;
+	db.Open(DATABASE_NAME);
+	auto trn = db.BeginTransaction();
+	try
+	{
+		std::wostringstream update;
+		update << "update orders set customer_code=" << Utils::ForSql(order.GetCustomerCode()) 
+			<< ", customer_name=" << Utils::ForSql(order.GetCustomerName()) 
+			<< ", creation_date=" << Utils::ForSql(order.GetCreationDate()) 
+			<< ", remote_id=" << order.GetRemoteId() 
+			<< ", read=" << (order.IsRead() ? "1" : "0") 
+			<< " where id=" << order.GetId() << ";";
+		
+		int rows_affected = trn.Execute(Utils::to_string(update.str()).c_str());
+		OutputDebugStringW(L"\t\tupdate orders\n");
+
+		trn.Commit();
+	}
+	catch (sqlite::SqliteException& exc)
+	{
+		trn.Rollback();
+		throw std::exception(exc.what());
+	}
+
 	/*sqlite3_open_v2(DATABASE_NAME, &sqlite, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nullptr);
 	
 	sqlite3_stmt *statement;

@@ -111,7 +111,7 @@ void OrderService::SaveOrders(vector<Order> & orders)
 	}
 }
 
-void OrderService::Save(Order order)
+void OrderService::Save(Order & order)
 {
 	OrderRepository repo;
 	if (order.GetId() == 0)

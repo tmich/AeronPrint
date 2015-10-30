@@ -30,6 +30,11 @@ std::wstring Utils::ForSql(const std::string & str)
 	return sstr.str();
 }
 
+std::wstring Utils::ForSql(const std::wstring & str)
+{
+	return ForSql(to_string(str));
+}
+
 std::string Utils::to_string(std::wstring s)
 {
 	std::string strValue;

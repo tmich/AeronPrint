@@ -42,6 +42,8 @@ protected:
 class Order
 {
 public:
+	Order(const Order&);
+
 	Order();
 	~Order();
 
