@@ -17,7 +17,7 @@ class MyFrame : public wxFrame
 {
 public:
 	MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size);
-	void OnPreviewFrameModalityKind(wxCommandEvent& event);
+	//void OnPreviewFrameModalityKind(wxCommandEvent& event);
 	~MyFrame();
 
 	OrderListCtrl *m_listCtrl;

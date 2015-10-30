@@ -34,12 +34,12 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	});*/
 	
 	// Stampa
-	m_Prn = new wxHtmlEasyPrinting(_("Easy Printing Demo"), this);
+	m_Prn = new wxHtmlEasyPrinting(_("Stampa Ordine"), this);
 	
 	btnCheckNew->Bind(wxEVT_BUTTON, &MyFrame::OnCheckNew, this);
 	btnCheckNew->Show();
 
-	/*
+	
 	OrderService orderService;
 
 	try
@@ -58,7 +58,6 @@ MyFrame::MyFrame(const wxString & title, const wxPoint & pos, const wxSize & siz
 	{
 		wxMessageBox(exc.what(), L"Errore");
 	}
-	*/
 }
 
 void MyFrame::OnExit(wxCommandEvent& event)
@@ -82,25 +81,45 @@ void MyFrame::OnSelectedItem(wxListEvent& event)
 
 		OrderService orderService;
 		Order order = orderService.GetOrderById(orderId);
+		
+		std::wostringstream wss, txt;
+		wss << "Ordine n. " << orderId;
+		m_Prn->SetName(wss.str());
+		wss << " (@PAGENUM@/@PAGESCNT@)<hr>";
+		m_Prn->SetHeader(wss.str(), wxPAGE_ALL);
+
+		// data: 2015-10-22 11:40:35.146612
+
+		std::wstring complete_date, day, month, year, hh, mm;
+		complete_date = order.GetCreationDate();
+		year = complete_date.substr(0, 4);
+		month = complete_date.substr(5, 2);
+		day = complete_date.substr(8, 2);
+		hh = complete_date.substr(11, 2);
+		mm = complete_date.substr(14, 2);
+
+		txt << "<h2>" << order.GetCustomerName() << " [" << order.GetCustomerCode() << "]" << "</h2>";
+		txt << "<h5> Ordine inviato il " << day << "-" << month << "-" << year << " alle " << hh << ":" << mm << "</h5>";
+		txt << "<table border=\"1\" width=\"100%\">";
+		txt << "<tr><td><font size=\"4\"><b>Qta</b></font></td><td><font size=\"4\"><b>Cod</b></font></td><td><font size=\"4\"><b>Articolo</b></font></td></tr>";
+		for (auto & item : order.Items)
+		{
+			txt << "<tr>";
+			txt << "<td width=\"5%\"><font size=\"4\">" << item.GetQty() << "</font></td>";
+			txt << "<td width=\"10%\"><font size=\"4\">[" << item.GetCode() << "]</font></td>";
+			txt << "<td width=\"55%\"><font size=\"4\">" << item.GetName() << "</font></td>";
+			txt << "</tr>";
+			if (item.GetNotes() != "")
+			{
+				txt << "<tr><td></td><td></td><td><font size=\"3\"<i><b>NB:</b>" << item.GetNotes() << "</i></font></td></tr>";
+			}
+		}
+		txt << "</table>";
+		m_Prn->PreviewText(txt.str());
+
 		order.IsRead(true);
 		orderService.Save(order);
 		m_listCtrl->SetItemBackgroundColour(idx, wxColour(*wxWHITE));
-
-		// TODO: stampa
-		std::wostringstream wss, txt;
-		wss << "Stampa ordine n. " << orderId << " (@PAGENUM@/@PAGESCNT@)<hr>";
-		m_Prn->SetHeader(wss.str(), wxPAGE_ALL);
-
-		txt << "<h1>" << order.GetCustomerName() << " [" << order.GetCustomerCode() << "]" << "</h1>";
-		txt << "<ul>";
-		for (auto & item : order.Items)
-		{
-			txt << "<li>" << item.GetName() << "</li>";
-		}
-		txt << "</ul>";
-		m_Prn->PreviewText(txt.str());
-		//wxMessageBox(event.GetText());
-
 		event.Veto();
 	}
 	catch (const DatabaseException& db_exception)

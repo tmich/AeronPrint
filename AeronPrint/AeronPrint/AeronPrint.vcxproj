@@ -171,7 +171,9 @@
     <ClCompile Include="order_generator.cpp" />
     <ClCompile Include="order_repository.cpp" />
     <ClCompile Include="order_service.cpp" />
-    <ClCompile Include="sqlite3.c" />
+    <ClCompile Include="sqlite3.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">SQLITE_THREADSAFE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
     <ClCompile Include="sqlite_db.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>

@@ -28,7 +28,7 @@ public:
 private:
 	bool exists(Order order);
 	void addWithinTransaction(sqlite::Transaction & trn, Order & order);
-	Order doMakeOrder(sqlite::Cursor crs);
+	Order doMakeOrder(sqlite::Cursor & crs);
 	void loadItemsForOrder(Order & order);
 	/*void addItemWithinTransaction(sqlite::Transaction & trn, OrderItem & item, int orderId);*/
 };
@@ -44,6 +44,6 @@ public:
 
 	std::vector<OrderItem> GetAll(int orderId);
 private:
-	OrderItem doMakeOrderItem(sqlite::Cursor crs);
+	OrderItem doMakeOrderItem(sqlite::Cursor & crs);
 };
 
