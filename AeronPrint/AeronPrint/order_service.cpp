@@ -1,5 +1,5 @@
 #include "order_service.h"
-
+#include "aeron_exceptions.h"
 
 
 OrderService::OrderService()
@@ -66,7 +66,7 @@ int OrderService::getLastOrderRemoteId()
 	return maxId;
 }
 
-void OrderService::CheckNewOrders()
+std::vector<Order> OrderService::CheckNewOrders()
 {
 	vector<Order> orders;
 	AeronClient client;
@@ -88,14 +88,16 @@ void OrderService::CheckNewOrders()
 		throw;
 	}
 
-	try
+	return orders;
+
+	/*try
 	{
 		repo.AddAll(orders);
 	}
 	catch (const std::exception& exc)
 	{
 		throw DatabaseException(exc.what());
-	}
+	}*/
 }
 
 void OrderService::SaveOrders(vector<Order> & orders)

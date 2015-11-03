@@ -107,7 +107,27 @@ std::vector<Order> OrderRepository::GetAll()
 	db.Open(DATABASE_NAME);
 	//OutputDebugString(L"\tda OrderRepository::GetAll()\n");
 
-	sqlite::Cursor crs(db, "select id, customer_code, customer_name, creation_date, remote_id, read from orders;");
+	std::ostringstream qry;
+	qry << "select id, customer_code, customer_name, creation_date, remote_id, read from orders where 1 ";
+
+	auto filter = queryConstraints.Filter();
+	if (filter.Field != "")
+	{
+		qry << " and " << filter.Field << filter.Operator() << filter.Value << " ";
+	}
+
+	auto sort = queryConstraints.Sort();
+	if (sort.Field != "")
+	{
+		qry << " order by " << sort.Field << " " << (sort.Direction == SortConstraint::ASCENDING ? " asc " : " desc ");
+	}
+
+	if (queryConstraints.Limit() > 0)
+	{
+		qry << " limit " << queryConstraints.Limit();
+	}
+
+	sqlite::Cursor crs(db, qry.str());
 	//OutputDebugString(L"\tcarico gli ordini:\n");
 	// carico gli ordini
 	while (crs.Next())

@@ -18,9 +18,6 @@
     <ClInclude Include="MyApp.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="MyFrame.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="OrderListCtrl.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -54,12 +51,24 @@
     <ClInclude Include="sqlite_db.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="query_constraints.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="paginator.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="orders_controller.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="orders_view.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="aeron_exceptions.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyApp.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="MyFrame.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="Order.cpp">
@@ -87,6 +96,15 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="sqlite_db.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="query_constraints.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="orders_controller.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="orders_view.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

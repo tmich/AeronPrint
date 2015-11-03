@@ -12,22 +12,12 @@ public:
 
 	//std::vector<Order> GetNewOrders();
 	std::vector<Order> GetAllOrders();
-	void CheckNewOrders();
+	std::vector<Order> CheckNewOrders();
 
-	void SaveOrders(vector<Order> & orders);
+	void SaveOrders(std::vector<Order> & orders);
 	void Save(Order & order);
 	Order GetOrderById(int id);
 private:
 	int getLastOrderRemoteId();
-};
-
-class ConnectionException : exception {};
-
-class DatabaseException   : exception
-{
-	std::string message;
-public:
-	DatabaseException(const std::string& message);
-	virtual const char * what() const throw() { return message.c_str(); }
 };
 

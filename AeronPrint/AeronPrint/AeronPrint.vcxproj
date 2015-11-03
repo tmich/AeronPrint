@@ -150,13 +150,17 @@
   <ItemGroup>
     <ClInclude Include="aeron_client.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="aeron_exceptions.h" />
     <ClInclude Include="MyApp.h" />
-    <ClInclude Include="MyFrame.h" />
+    <ClInclude Include="orders_view.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderListCtrl.h" />
+    <ClInclude Include="orders_controller.h" />
     <ClInclude Include="order_generator.h" />
     <ClInclude Include="order_repository.h" />
     <ClInclude Include="order_service.h" />
+    <ClInclude Include="paginator.h" />
+    <ClInclude Include="query_constraints.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite3ext.h" />
     <ClInclude Include="sqlite_db.h" />
@@ -165,12 +169,14 @@
   <ItemGroup>
     <ClCompile Include="aeron_client.cpp" />
     <ClCompile Include="MyApp.cpp" />
-    <ClCompile Include="MyFrame.cpp" />
+    <ClCompile Include="orders_view.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="OrderListCtrl.cpp" />
+    <ClCompile Include="orders_controller.cpp" />
     <ClCompile Include="order_generator.cpp" />
     <ClCompile Include="order_repository.cpp" />
     <ClCompile Include="order_service.cpp" />
+    <ClCompile Include="query_constraints.cpp" />
     <ClCompile Include="sqlite3.c">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">SQLITE_THREADSAFE=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

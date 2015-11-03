@@ -15,5 +15,7 @@ public:
 	static std::string to_string(const unsigned char * s);
 	static std::string to_string(const char * s);
 	static std::wstring s2ws(const std::string& str);
+
+	static void format_date(std::wstring timestamp, std::wstring & date, std::wstring & hour);
 };
 

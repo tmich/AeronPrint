@@ -9,33 +9,39 @@
 
 #include "wx/html/htmprint.h"
 #include "OrderListCtrl.h"
-#include "order_service.h"
 #include "MyApp.h"
 #include <vector>
+#include "paginator.h"
 
-class MyFrame : public wxFrame
+class OrdersView : public wxFrame
 {
 public:
-	MyFrame(const wxString & title, const wxPoint & pos, const wxSize & size);
-	//void OnPreviewFrameModalityKind(wxCommandEvent& event);
-	~MyFrame();
+	OrdersView(const wxString & title);
+	~OrdersView();
 
-	OrderListCtrl *m_listCtrl;
+	OrderListCtrl * OrdersList;
 	wxPanel *m_panel;
+
+	wxButton * btnCheckNew;
+	wxButton * btnNext;
+	wxButton * btnPrev;
+
+	void Update(const std::vector<Order>& orders);
+	void PrintPreview(const Order& order);
+	void UpdateListItem(int idx, const Order & order);
 private:
 	void OnHello(wxCommandEvent&);
 	void OnExit(wxCommandEvent&);
 	void OnAbout(wxCommandEvent&);
-	void OnSelectedItem(wxListEvent&);
-	void OnCheckNew(wxCommandEvent&);
-	void OnPrintPreview(wxCommandEvent&);
-	
-	void updateList(const vector<Order>& orders);
+
+	void updateList(const std::vector<Order>& orders);
+
+	wxFont * defaultFont;
 
 	wxMenuItem * mnuPrint;
 	wxHtmlEasyPrinting * m_Prn;
-	
-	wxDECLARE_NO_COPY_CLASS(MyFrame);
+		
+	wxDECLARE_NO_COPY_CLASS(OrdersView);
 	wxDECLARE_EVENT_TABLE();
 };
 

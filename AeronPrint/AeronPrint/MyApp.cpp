@@ -1,5 +1,6 @@
 #include "MyApp.h"
-#include "MyFrame.h"
+#include "orders_controller.h"
+#include "orders_view.h"
 
 IMPLEMENT_APP(MyApp)
 
@@ -10,9 +11,11 @@ bool MyApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
-	MyFrame *frame = new MyFrame("AEG 2000", wxPoint(50, 50), wxSize(450, 340));
-	frame->Centre(wxBOTH);
-	frame->Show(true);
+	OrdersView *frame = new OrdersView("AEG 2000");
+	OrdersController * ctrl = new OrdersController(frame);
+	//frame->Centre(wxBOTH);
+	//frame->Show(true);
+
 	return true;
 }
 

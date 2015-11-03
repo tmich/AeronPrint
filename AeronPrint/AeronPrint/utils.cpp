@@ -59,3 +59,21 @@ std::wstring Utils::s2ws(const std::string& str)
 	MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
 	return wstrTo;
 }
+
+void Utils::format_date(std::wstring timestamp, std::wstring & date, std::wstring & hour)
+{
+	std::wstring day, month, year, hh, mm;
+	
+	year = timestamp.substr(0, 4);
+	month = timestamp.substr(5, 2);
+	day = timestamp.substr(8, 2);
+	hh = timestamp.substr(11, 2);
+	mm = timestamp.substr(14, 2);
+
+	std::wostringstream s1, s2;
+	s1 << day << "-" << month << "-" << year;
+	s2 << hh << ":" << mm;
+
+	date.assign(s1.str());
+	hour.assign(s2.str());
+}

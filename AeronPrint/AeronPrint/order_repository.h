@@ -2,6 +2,7 @@
 #include "order.h"
 #include "sqlite_db.h"
 #include "constants.h"
+#include "query_constraints.h"
 #include <string>
 #include <exception>
 #include <sstream>
@@ -13,6 +14,8 @@ class OrderRepository
 public:
 	OrderRepository();
 	~OrderRepository();
+
+	OrderRepository(QueryConstraints & constraints) : queryConstraints(constraints) {};
 
 	void Add(Order & order);
 	void AddAll(std::vector<Order> & orders);
@@ -30,6 +33,8 @@ private:
 	void addWithinTransaction(sqlite::Transaction & trn, Order & order);
 	Order doMakeOrder(sqlite::Cursor & crs);
 	void loadItemsForOrder(Order & order);
+
+	QueryConstraints queryConstraints;
 	/*void addItemWithinTransaction(sqlite::Transaction & trn, OrderItem & item, int orderId);*/
 };
 
