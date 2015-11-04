@@ -9,7 +9,6 @@
 
 #include "wx/html/htmprint.h"
 #include "OrderListCtrl.h"
-#include "MyApp.h"
 #include <vector>
 #include "paginator.h"
 
@@ -25,6 +24,10 @@ public:
 	wxButton * btnCheckNew;
 	wxButton * btnNext;
 	wxButton * btnPrev;
+
+	void NotifyNewOrders(size_t n);
+	void Warn(std::wstring msg);
+	void Info(std::wstring msg);
 
 	void Update(const std::vector<Order>& orders);
 	void PrintPreview(const Order& order);

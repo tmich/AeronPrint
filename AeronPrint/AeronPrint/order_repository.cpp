@@ -9,7 +9,7 @@
 
 OrderRepository::OrderRepository()
 {
-	sqlite::Connection db;
+	/*sqlite::Connection db;
 	db.Open(DATABASE_NAME);
 	try
 	{
@@ -19,7 +19,7 @@ OrderRepository::OrderRepository()
 	catch (sqlite::SqliteException& exc)
 	{
 		throw std::exception(exc.what());
-	}
+	}*/
 }
 
 OrderRepository::~OrderRepository()

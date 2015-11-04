@@ -6,7 +6,7 @@ template<typename T>
 class Paginator
 {
 public:
-	Paginator(std::vector<T> data, int pageSize);
+	Paginator(std::vector<T> data, size_t pageSize);
 	~Paginator();
 
 	std::vector<T> Page(int page);
@@ -14,7 +14,7 @@ public:
 	int Current();
 protected:
 	std::vector<T> data_;
-	int pageSize_;
+	size_t  pageSize_;
 	int currPage_;
 };
 
@@ -22,9 +22,8 @@ protected:
 /*** IMPLEMENTATION ***/
 
 template<typename T>
-Paginator<T>::Paginator(std::vector<T> data, int pageSize) : data_{ data }, pageSize_{ pageSize }, currPage_{ -1 }
+Paginator<T>::Paginator(std::vector<T> data, size_t pageSize) : data_{ data }, pageSize_{ pageSize }, currPage_{ -1 }
 {
-
 }
 
 template<typename T>
@@ -40,8 +39,14 @@ std::vector<T> Paginator<T>::Page(int page)
 	auto start = data_.cbegin() + (pageSize_ * page);
 	std::vector<T>::const_iterator end;
 
+	if (data_.size() < pageSize_)
+	{
+		return data_;
+	}
+
 	if (page == Pages() - 1)
 	{
+		// richiesta ultima pagina
 		end = data_.cend();
 	}
 	else
