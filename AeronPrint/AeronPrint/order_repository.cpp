@@ -45,7 +45,7 @@ void OrderRepository::Add(Order & order)
 
 void OrderRepository::addWithinTransaction(sqlite::Transaction & trn, Order & order)
 {
-	OutputDebugStringW(L"\tOrderRepository::Add(db, order)\n");
+	//wxLogDebug(L"\tOrderRepository::Add(db, order)\n");
 	auto customerCode = Utils::to_string(order.GetCustomerCode());
 	auto customerName = Utils::to_string(order.GetCustomerName());
 	auto creationDate = Utils::to_string(order.GetCreationDate());
@@ -57,7 +57,7 @@ void OrderRepository::addWithinTransaction(sqlite::Transaction & trn, Order & or
 		", " << remoteId << ", " << order.IsRead() << ");";
 
 	int rows_affected = trn.Execute(Utils::to_string(insert.str()).c_str());
-	OutputDebugStringW(L"\t\tinsert into orders\n");
+	//wxLogDebug(L"\t\tinsert into orders\n");
 	if (rows_affected == 1)
 	{
 		order.SetId(trn.GetLastInsertRowid());
@@ -200,7 +200,7 @@ void OrderRepository::Update(Order & order)
 			<< " where id=" << order.GetId() << ";";
 		
 		int rows_affected = trn.Execute(Utils::to_string(update.str()).c_str());
-		OutputDebugStringW(L"\t\tupdate orders\n");
+		//wxLogDebug(L"\t\tupdate orders\n");
 
 		trn.Commit();
 	}
@@ -340,7 +340,7 @@ void OrderItemRepository::AddAll(sqlite::Transaction & trn, std::vector<OrderIte
 	{
 		Add(trn, item, orderId);
 	}
-	OutputDebugString(L"\t entro in OrderItemRepository::AddAll()\n");
+	//OutputDebugString(L"\t entro in OrderItemRepository::AddAll()\n");
 }
 
 std::vector<OrderItem> OrderItemRepository::GetAll(int orderId)
@@ -352,7 +352,7 @@ std::vector<OrderItem> OrderItemRepository::GetAll(int orderId)
 
 	sqlite::Connection db;
 	db.Open(DATABASE_NAME);
-	OutputDebugString(L"\t da OrderItemRepository::GetAll()\n");
+	//OutputDebugString(L"\t da OrderItemRepository::GetAll()\n");
 
 	sqlite::Cursor crs(db, select.str().c_str());
 

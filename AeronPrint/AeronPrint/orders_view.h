@@ -8,6 +8,7 @@
 #endif
 
 #include "wx/html/htmprint.h"
+#include "my_printing.h"
 #include "OrderListCtrl.h"
 #include <vector>
 #include "paginator.h"
@@ -24,25 +25,31 @@ public:
 	wxButton * btnCheckNew;
 	wxButton * btnNext;
 	wxButton * btnPrev;
+	wxButton * btnPrint;
 
+	wxMenuItem * mnuItemToggleTask;
+	
 	void NotifyNewOrders(size_t n);
 	void Warn(std::wstring msg);
 	void Info(std::wstring msg);
 
 	void Update(const std::vector<Order>& orders);
-	void PrintPreview(const Order& order);
+	/*bool PrintPreview(const Order& order);
+	bool Print(const Order& order);*/
 	void UpdateListItem(int idx, const Order & order);
+
+	MyHtmlEasyPrinting * Printer();
 private:
 	void OnHello(wxCommandEvent&);
 	void OnExit(wxCommandEvent&);
 	void OnAbout(wxCommandEvent&);
-
+	
 	void updateList(const std::vector<Order>& orders);
 
 	wxFont * defaultFont;
 
 	wxMenuItem * mnuPrint;
-	wxHtmlEasyPrinting * m_Prn;
+	MyHtmlEasyPrinting * m_Prn;
 		
 	wxDECLARE_NO_COPY_CLASS(OrdersView);
 	wxDECLARE_EVENT_TABLE();
@@ -50,5 +57,6 @@ private:
 
 enum
 {
-	ID_Hello = 1
+	ID_Hello = 1,
+	ID_ToggleTask
 };

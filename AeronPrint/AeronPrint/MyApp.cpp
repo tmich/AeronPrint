@@ -1,6 +1,10 @@
 #include "MyApp.h"
 #include "orders_view.h"
 #include "sqlite_db.h"
+#include "config.h"
+#include <filesystem>
+
+namespace fs = std::experimental::filesystem;
 
 IMPLEMENT_APP(MyApp)
 
@@ -11,6 +15,27 @@ bool MyApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
+	SetAppName("AeronPrint");
+	SetVendorName("AEG2000");
+
+	// open config file
+	Config cfg;
+	if (!cfg.HasGroup(wxT("API")))
+	{
+		cfg.SetPath(wxT("/API"));
+		cfg.Write(wxT("Path"), "http://localhost:5000/api/v1.0/");
+	}
+	
+	if (!cfg.HasGroup(wxT("TEST")))
+	{
+		cfg.SetPath(wxT("/TEST"));
+		cfg.Write(wxT("Dummy"), 18);
+	}
+
+	cfg.Flush();
+	//cfg.Write(wxT("/dummy_integer"), 100);
+	//cfg.Flush();
+	
 	// check database
 	sqlite::Connection db;
 	db.Open(DATABASE_NAME);

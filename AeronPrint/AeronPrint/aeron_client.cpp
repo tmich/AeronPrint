@@ -1,5 +1,5 @@
 #include "aeron_client.h"
-
+#include "config.h"
 
 
 AeronClient::AeronClient()
@@ -13,6 +13,7 @@ AeronClient::~AeronClient()
 
 pplx::task<vector<Order>> AeronClient::GetAll(int lastId)
 {
+	Config cfg;
 	return pplx::create_task([lastId]
 	{
 		std::wstringstream ws;

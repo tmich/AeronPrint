@@ -18,7 +18,7 @@ void Connection::Open(std::string databaseName)
 	{
 		throw SqliteException(sqlite3_errstr(rc));
 	}
-	OutputDebugString(L"Connessione aperta\n");
+	//OutputDebugString(L"Connessione aperta\n");
 }
 
 void Connection::Close()
@@ -31,7 +31,7 @@ void Connection::Close()
 	}
 
 	db_ = nullptr;
-	OutputDebugString(L"Connessione chiusa\n");
+	//OutputDebugString(L"Connessione chiusa\n");
 }
 
 int Connection::Execute(std::string command)
@@ -125,7 +125,7 @@ bool Cursor::Next()
 {
 	wchar_t wstr[50];
 	swprintf_s(wstr, 50, L"\t\tCursor::Next, puntatore stmt_=%p\n", stmt_);
-	OutputDebugString(wstr);
+	//OutputDebugString(wstr);
 
 	auto rc = sqlite3_step(stmt_);
 	return rc == SQLITE_ROW;

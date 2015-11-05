@@ -76,4 +76,3 @@ protected:
 	std::wstring mNotes;
 	bool mRead;
 };
-

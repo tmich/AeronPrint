@@ -88,7 +88,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0500;__WXMSW__;wxUSE_GUI=1;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(WXWIN)\include;$(WXWIN)\include\msvc;E:\DEV\Sqlite++\SqliteDB\SqliteDB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WXWIN)\include;$(WXWIN)\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -103,12 +103,14 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;WINVER=0x0500;__WXMSW__;wxUSE_GUI=1;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(WXWIN)\include;$(WXWIN)\include\msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_x64_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,9 +151,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="aeron_client.h" />
+    <ClInclude Include="config.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="aeron_exceptions.h" />
+    <ClInclude Include="formatters.h" />
     <ClInclude Include="MyApp.h" />
+    <ClInclude Include="my_printing.h" />
     <ClInclude Include="orders_view.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderListCtrl.h" />
@@ -168,7 +173,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aeron_client.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="formatters.cpp" />
     <ClCompile Include="MyApp.cpp" />
+    <ClCompile Include="my_printing.cpp" />
     <ClCompile Include="orders_view.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="OrderListCtrl.cpp" />
