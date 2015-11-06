@@ -39,8 +39,10 @@ public:
 	void UpdateListItem(int idx, const Order & order);
 
 	MyHtmlEasyPrinting * Printer();
+	wxCommandEvent * my_event;
 private:
 	void OnHello(wxCommandEvent&);
+	void OnToggleTask(wxCommandEvent& event);
 	void OnExit(wxCommandEvent&);
 	void OnAbout(wxCommandEvent&);
 	
@@ -50,10 +52,14 @@ private:
 
 	wxMenuItem * mnuPrint;
 	MyHtmlEasyPrinting * m_Prn;
-		
+
+	
+	
 	wxDECLARE_NO_COPY_CLASS(OrdersView);
 	wxDECLARE_EVENT_TABLE();
 };
+
+//wxDEFINE_EVENT(EVT_TASK_TOGGLE, wxCommandEvent);
 
 enum
 {

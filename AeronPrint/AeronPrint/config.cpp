@@ -2,7 +2,7 @@
 #include "wx\log.h"
 #include <filesystem>
 
-namespace fs = std::experimental::filesystem;
+//namespace fs = std::experimental::filesystem;
 
 Config::Config()
 {

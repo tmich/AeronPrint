@@ -3,6 +3,8 @@
 #include "sqlite_db.h"
 #include "config.h"
 #include <filesystem>
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
 
 namespace fs = std::experimental::filesystem;
 
@@ -15,22 +17,30 @@ bool MyApp::OnInit()
 	if (!wxApp::OnInit())
 		return false;
 
-	SetAppName("AeronPrint");
-	SetVendorName("AEG2000");
+	
+	// Check config directories
+	//auto cfg_path = wxStandardPaths::Get().GetUserConfigDir() + wxFileName::GetPathSeparator() + GetVendorName() + wxFileName::GetPathSeparator() + GetAppName();
+	//fs::path path(cfg_path.ToStdWstring());
+	//if (!fs::exists(path))
+	//{
+	//	fs::create_directories(path);
+	//	//wxFileConfig(GetAppName(), GetVendorName(), cfg_path, cfg_path, wxCONFIG_USE_GLOBAL_FILE | wxCONFIG_USE_SUBDIR).Flush();
+	//}
+	//cfg_path.Append(wxFileName::GetPathSeparator() + GetAppName() + ".ini");
 
 	// open config file
-	Config cfg;
+	Config cfg; //(GetAppName(), GetVendorName(), cfg_path, cfg_path, wxCONFIG_USE_GLOBAL_FILE | wxCONFIG_USE_SUBDIR);
 	if (!cfg.HasGroup(wxT("API")))
 	{
 		cfg.SetPath(wxT("/API"));
 		cfg.Write(wxT("Path"), "http://localhost:5000/api/v1.0/");
 	}
 	
-	if (!cfg.HasGroup(wxT("TEST")))
+	/*if (!cfg.HasGroup(wxT("TEST")))
 	{
 		cfg.SetPath(wxT("/TEST"));
-		cfg.Write(wxT("Dummy"), 18);
-	}
+		cfg.Write(wxT("Dummy"), 19);
+	}*/
 
 	cfg.Flush();
 	//cfg.Write(wxT("/dummy_integer"), 100);
