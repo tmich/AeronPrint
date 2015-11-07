@@ -47,7 +47,6 @@ bool MyApp::OnInit()
 	cfg.Flush();
 	//cfg.Write(wxT("/dummy_integer"), 100);
 	//cfg.Flush();
-	
 	// check database
 	sqlite::Connection db;
 	db.Open(DATABASE_NAME);
@@ -58,6 +57,7 @@ bool MyApp::OnInit()
 	}
 	catch (sqlite::SqliteException& exc)
 	{
+		wxMessageBox(exc.what());
 		throw std::exception(exc.what());
 		return false;
 	}
