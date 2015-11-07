@@ -19,13 +19,15 @@ bool MyApp::OnInit()
 
 	
 	// Check config directories
-	//auto cfg_path = wxStandardPaths::Get().GetUserConfigDir() + wxFileName::GetPathSeparator() + GetVendorName() + wxFileName::GetPathSeparator() + GetAppName();
-	//fs::path path(cfg_path.ToStdWstring());
-	//if (!fs::exists(path))
-	//{
-	//	fs::create_directories(path);
-	//	//wxFileConfig(GetAppName(), GetVendorName(), cfg_path, cfg_path, wxCONFIG_USE_GLOBAL_FILE | wxCONFIG_USE_SUBDIR).Flush();
-	//}
+	//auto cfg_path = wxStandardPaths::Get().GetUserConfigDir() + wxFileName::GetPathSeparator() + "AEG2000" + wxFileName::GetPathSeparator() + "AeronPrint";
+	const std::string CONFIG_PATH = (wxStandardPaths::Get().GetUserConfigDir() + wxFileName::GetPathSeparator()
+		+ APP_NAME).ToStdString();
+	fs::path path(CONFIG_PATH);
+	if (!fs::exists(path))
+	{
+		fs::create_directories(path);
+		//wxFileConfig(GetAppName(), GetVendorName(), cfg_path, cfg_path, wxCONFIG_USE_GLOBAL_FILE | wxCONFIG_USE_SUBDIR).Flush();
+	}
 	//cfg_path.Append(wxFileName::GetPathSeparator() + GetAppName() + ".ini");
 
 	// open config file

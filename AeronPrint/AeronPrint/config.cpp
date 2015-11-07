@@ -4,7 +4,7 @@
 
 //namespace fs = std::experimental::filesystem;
 
-Config::Config()
+Config::Config() : wxFileConfig("AeronPrint", "AEG2000", "config.ini", "config.ini", wxCONFIG_USE_SUBDIR | wxCONFIG_USE_GLOBAL_FILE)
 {
 	/*const std::string base_path = wxStandardPaths::Get().GetUserConfigDir().ToStdString();
 	const std::string app_name{ "AeronPrint" };
