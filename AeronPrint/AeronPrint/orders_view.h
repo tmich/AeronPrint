@@ -37,6 +37,7 @@ public:
 	/*bool PrintPreview(const Order& order);
 	bool Print(const Order& order);*/
 	void UpdateListItem(int idx, const Order & order);
+	
 
 	MyHtmlEasyPrinting * Printer();
 	wxCommandEvent * my_event;
@@ -52,7 +53,7 @@ private:
 
 	wxMenuItem * mnuPrint;
 	MyHtmlEasyPrinting * m_Prn;
-
+	//wxMenu * popupMenu;
 	
 	
 	wxDECLARE_NO_COPY_CLASS(OrdersView);

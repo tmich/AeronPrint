@@ -87,6 +87,8 @@ namespace sqlite
 	class Connection
 	{
 	public:
+		static std::string DATABASE_PATH;
+
 		Connection();
 		~Connection();
 

@@ -4,6 +4,7 @@
 	#include <wx/wx.h>
 #endif
 #include <wx/listctrl.h>
+#include <vector>
 
 class OrderListCtrl : public wxListCtrl
 {
@@ -18,6 +19,8 @@ public:
 		m_updated = -1;
 
 	}
+
+	std::vector<int> GetSelectedItems();
 
 	//void OnActivated(wxListEvent& event);
 private:

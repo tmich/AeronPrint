@@ -36,49 +36,18 @@ OrdersController::OrdersController(OrdersView * ordersView)
 		wxMessageBox(exc.what(), L"Errore");
 	}
 
-	// Bind
+	// CHECKING NEW ORDERS: scheduled task
+	
+	create_timer_and_start(std::bind(&OrdersController::checkOrders, this), 10000);
 
+	// Binding
+	// ***********************
+	// Check new orders
 	view_->btnCheckNew->Bind(wxEVT_BUTTON, [&](wxCommandEvent & event) {
-		view_->Info(L"Connessione in corso...");
-
-		try
-		{
-			OrderService orderService;
-			auto new_orders = orderService.CheckNewOrders();
-
-			if (new_orders.size() > 0)
-			{
-				std::ostringstream ss;
-				ss << "Trovati " << new_orders.size() << " nuovi ordini";
-				view_->Info(Utils::s2ws(ss.str()));
-
-				repo->AddAll(new_orders);
-				auto orders = repo->GetAll();
-				orderPaginator = new Paginator<Order>(orders, 15);
-				view_->Update(orderPaginator->Page(0));
-			}
-			else
-			{
-				view_->Info(L"Dati aggiornati");
-			}
-		}
-		catch (const ConnectionException&)
-		{
-			view_->Warn(L"Impossibile connettersi al server remoto.");
-		}
-		catch (const DatabaseException& db_exception)
-		{
-			std::wstringstream ws;
-			ws << L"Errore nel database: " << db_exception.what();
-
-			view_->Warn(ws.str());
-		}
-		catch (const std::exception& exc)
-		{
-			view_->Warn(Utils::s2ws(exc.what()));
-		}
+		checkOrders();
 	});
 
+	// Next Page
 	view_->btnNext->Bind(wxEVT_BUTTON, [=](wxCommandEvent& WXUNUSED(event)) {
 		int nPage = orderPaginator->Current() + 1;
 		if (nPage >= 0 && nPage < orderPaginator->Pages())
@@ -87,6 +56,7 @@ OrdersController::OrdersController(OrdersView * ordersView)
 		}
 	});
 
+	// Prev page
 	view_->btnPrev->Bind(wxEVT_BUTTON, [=](wxCommandEvent& WXUNUSED(event)) {
 		int nPage = orderPaginator->Current() - 1;
 		if (nPage >= 0 && nPage < orderPaginator->Pages())
@@ -95,7 +65,7 @@ OrdersController::OrdersController(OrdersView * ordersView)
 		}
 	});
 	
-	// menu
+	// Menu binding
 	view_->Bind(wxEVT_MENU, [=](wxCommandEvent& event) {
 		switch (event.GetId())
 		{
@@ -121,24 +91,33 @@ OrdersController::OrdersController(OrdersView * ordersView)
 
 	// PRINT SELECTED ORDERS
 	view_->btnPrint->Bind(wxEVT_BUTTON, [=](wxCommandEvent& WXUNUSED(event)) {
-		long itemIndex = -1;
+		std::wostringstream payload;
 
-		while ((itemIndex = view_->OrdersList->GetNextItem(itemIndex,
-			wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED)) != wxNOT_FOUND) {
-			// Got the selected item index
-			//wxLogDebug(OrdersList->GetItemText(itemIndex));
-			int orderId = atoi(view_->OrdersList->GetItemText(itemIndex));
+		for (int& index : view_->OrdersList->GetSelectedItems())
+		{
+			int orderId = view_->OrdersList->GetItemData(index);
 			Order order = repo->Get(orderId);
-
 			OrderHtmlFormatter html(order);
-			//auto isRead = view_->Print(order);
-			auto isRead = view_->Printer()->PrintText(html.ToHtml());
-			
-			order.IsRead(isRead);
+			payload << html.ToHtml();
+			order.IsRead(true);
 			repo->Update(order);
-			view_->UpdateListItem(itemIndex, order);
+			view_->UpdateListItem(index, order);
 		}
+
+		view_->Printer()->PrintText(payload.str());
 	});
+
+	//// LIST RIGHT CLICK
+	//view_->OrdersList->Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, [&](wxListEvent& event) {
+	//	//popupMenu = new wxMenu();
+	//	void *data = reinterpret_cast<void *>(event.GetItem().GetData());
+	//	wxMenu mnu;
+	//	mnu.SetClientData(data);
+	//	mnu.Append(300, "Do something");
+	//	mnu.Append(301, "Do something else");
+	//	//mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(OrdersController::OnPopupClick), NULL, this);
+	//	view_->PopupMenu(&mnu);
+	//});
 
 	// PRINT PREVIEW
 	view_->OrdersList->Bind(wxEVT_LIST_ITEM_ACTIVATED, [&](wxListEvent& event) {
@@ -149,11 +128,11 @@ OrdersController::OrdersController(OrdersView * ordersView)
 			int orderId = atoi(event.GetText());
 			Order order = repo->Get(orderId);
 
-			std::wostringstream wss;
-			wss << "Ordine n. " << order.GetId();
+			/*std::wostringstream wss;
+			wss << "Ordine n. " << order.GetRemoteId();
 			view_->Printer()->SetName(wss.str());
 			wss << " (@PAGENUM@/@PAGESCNT@)<hr>";
-			view_->Printer()->SetHeader(wss.str(), wxPAGE_ALL);
+			view_->Printer()->SetHeader(wss.str(), wxPAGE_ALL);*/
 
 			//view_->PrintPreview(order);
 			OrderHtmlFormatter html(order);
@@ -178,24 +157,50 @@ OrdersController::OrdersController(OrdersView * ordersView)
 	});
 
 	view_->Show(true);
+}
 
-	// scheduled task
-	std::function<void()> callback = [&] {
-		try
+void OrdersController::checkOrders()
+{
+	view_->Info(L"Connessione in corso...");
+
+	try
+	{
+		polling_timer->pause();
+
+		OrderService orderService;
+		auto new_orders = orderService.CheckNewOrders();
+		int sz = new_orders.size();
+
+		if (sz > 0)
 		{
-			OrderService serv;
-			auto orders = serv.CheckNewOrders();
-			auto sz = orders.size();
+			repo->AddAll(new_orders);
+			auto orders = repo->GetAll();
+			orderPaginator = new Paginator<Order>(orders, 15);
+			view_->Update(orderPaginator->Page(0));
 			view_->NotifyNewOrders(sz);
-			
 		}
-		catch (ConnectionException&)
+		else
 		{
-			view_->Warn(Utils::s2ws("Impossibile contattare il servizio remoto."));
+			view_->Info(L"Dati aggiornati");
 		}
-	};
 
-	create_timer_and_start(callback, 10000);
+		polling_timer->start();
+	}
+	catch (const ConnectionException&)
+	{
+		view_->Warn(L"Impossibile connettersi al server remoto.");
+	}
+	catch (const DatabaseException& db_exception)
+	{
+		std::wstringstream ws;
+		ws << L"Errore nel database: " << db_exception.what();
+
+		view_->Warn(ws.str());
+	}
+	catch (const std::exception& exc)
+	{
+		view_->Warn(Utils::s2ws(exc.what()));
+	}
 }
 
 OrdersController::~OrdersController()

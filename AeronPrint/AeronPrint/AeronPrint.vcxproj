@@ -157,6 +157,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="aeron_exceptions.h" />
     <ClInclude Include="formatters.h" />
+    <ClInclude Include="i_orders_controller.h" />
     <ClInclude Include="MyApp.h" />
     <ClInclude Include="my_printing.h" />
     <ClInclude Include="orders_view.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="order_service.h" />
     <ClInclude Include="paginator.h" />
     <ClInclude Include="query_constraints.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="sqlite3.h" />
     <ClInclude Include="sqlite3ext.h" />
     <ClInclude Include="sqlite_db.h" />
@@ -177,6 +179,7 @@
     <ClCompile Include="aeron_client.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="formatters.cpp" />
+    <ClCompile Include="i_orders_controller.cpp" />
     <ClCompile Include="MyApp.cpp" />
     <ClCompile Include="my_printing.cpp" />
     <ClCompile Include="orders_view.cpp" />
@@ -195,6 +198,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="AeronPrint.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="aeg2000.ico" />
+    <Image Include="exit.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

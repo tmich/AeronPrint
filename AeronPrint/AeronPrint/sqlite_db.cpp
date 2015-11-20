@@ -1,11 +1,15 @@
 #include "sqlite_db.h"
 #include <Windows.h>
-
+#include <filesystem>
 using namespace sqlite;
+
+namespace fs = std::experimental::filesystem;
 
 /*********************
 *	Connection
 *********************/
+std::string Connection::DATABASE_PATH = "";
+
 Connection::Connection()
 {
 }
@@ -13,7 +17,9 @@ Connection::Connection()
 void Connection::Open(std::string databaseName)
 {
 	sqlite3_initialize();
-	int rc = sqlite3_open_v2(databaseName.c_str(), &db_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, nullptr);
+	fs::path path(DATABASE_PATH);
+	path.append(databaseName);
+	int rc = sqlite3_open_v2(path.string().c_str(), &db_, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX, nullptr);
 	if (SQLITE_OK != rc)
 	{
 		throw SqliteException(sqlite3_errstr(rc));

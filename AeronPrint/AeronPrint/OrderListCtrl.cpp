@@ -39,3 +39,16 @@ wxEND_EVENT_TABLE()
 //	event.Veto();
 //}
 
+std::vector<int> OrderListCtrl::GetSelectedItems()
+{
+	int current = -1;
+	std::vector<int> items;
+	
+	while (items.size() < GetSelectedItemCount())
+	{
+		current = GetNextItem(current, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+		items.push_back(current);
+	}
+
+	return items;
+}

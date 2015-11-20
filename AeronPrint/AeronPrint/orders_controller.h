@@ -15,6 +15,8 @@ protected:
 	OrdersView * view_;
 	Paginator<Order> * orderPaginator;
 	OrderRepository * repo;
+
+	void checkOrders();
 	
 	template <class T>
 	void create_timer_and_start(const T& callback, unsigned int timeInMs);

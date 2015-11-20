@@ -2,16 +2,18 @@
 #include "utils.h"
 #include "formatters.h"
 
-
 OrdersView::OrdersView(const wxString & title) 
-	: wxFrame(nullptr, wxID_ANY, title, wxPoint(-1, -1), wxSize(600, 480), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
+	: wxFrame(nullptr, wxID_ANY, title, wxPoint(-1, -1), wxSize(700, 550), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
 {
 	wxMenu *menuFile = new wxMenu;
+	/**************
+	 *** ICON  ****
+	/*************/
+	SetIcon(wxICON(AAAAA));
 
-	/*mnuPrint = new wxMenuItem(menuFile, wxID_PREVIEW, "&Anteprima di stampa\tCtrl-P", "Anteprima di Stampa");
-	mnuPrint->Enable(false);
-	menuFile->Append(mnuPrint);
-	menuFile->AppendSeparator();*/
+	/**************
+	 ***  MENU  ***
+	/*************/
 	menuFile->Append(wxID_EXIT, "Esci");
 
 	wxMenu *menuEdit = new wxMenu;
@@ -33,6 +35,27 @@ OrdersView::OrdersView(const wxString & title)
 	menuBar->Append(menuHelp, "&?");
 
 	SetMenuBar(menuBar);
+
+	/*****************
+	 ***  TOOLBAR  ***
+	/****************/
+	/*wxToolBar *toolbar = CreateToolBar();
+	wxImage::AddHandler(new wxPNGHandler);
+	wxBitmap exit(wxT("exit.png"), wxBITMAP_TYPE_PNG);
+	wxBitmap refresh(wxT("refresh.png"), wxBITMAP_TYPE_PNG);
+	wxBitmap print(wxT("print.png"), wxBITMAP_TYPE_PNG);
+	wxBitmap preview(wxT("magnifier.png"), wxBITMAP_TYPE_PNG);
+	
+	toolbar->AddTool(wxID_REFRESH, "Aggiorna", refresh, "Controlla l'arrivo di nuovi ordini");
+	toolbar->AddTool(wxID_PREVIEW, "Visualizza", preview, "Visualizza l'ordine");
+	toolbar->AddTool(wxID_PRINT, "Stampa", print, "Stampa selezione");
+	toolbar->AddTool(wxID_EXIT, "Chiudi", exit, "Chiudi l'applicazione");
+	toolbar->Realize();*/
+
+	
+	/*******************
+	 ***  STATUSBAR  ***
+	/******************/
 	CreateStatusBar();
 	SetStatusText("Pronti");
 
@@ -49,6 +72,21 @@ OrdersView::OrdersView(const wxString & title)
 		wxPoint(-1, -1), wxDefaultSize,
 		wxLC_REPORT | wxBORDER_THEME);
 	
+	// LIST RIGHT CLICK
+	//OrdersList->Bind(wxEVT_LIST_ITEM_RIGHT_CLICK, [&](wxListEvent& event) {
+	//	//popupMenu = new wxMenu();
+	//	void *data = reinterpret_cast<void *>(event.GetItem().GetData());
+	//	int id = reinterpret_cast<int>(data);
+	//	wxMenu mnu;
+	//	mnu.SetClientData(data);
+	//	
+	//	//mnu.SetTitle(wxString(std::to_string(id)));
+	//	mnu.Append(300, "Do something");
+	//	mnu.Append(301, "Do something else");
+	//	//mnu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(OrdersController::OnPopupClick), NULL, this);
+	//	PopupMenu(&mnu);
+	//});
+
 	topsizer->Add(OrdersList,
 		1,            // make vertically stretchable
 		wxEXPAND |    // make horizontally stretchable
@@ -102,26 +140,25 @@ void OrdersView::updateList(const std::vector<Order>& orders)
 {
 	OrdersList->ClearAll();
 
-	// Col 1: Id locale
-	OrdersList->AppendColumn(wxT("N"));
-	OrdersList->SetColumnWidth(0, 30);
+	// Col 1: Id
+	OrdersList->AppendColumn(wxT("id"));
+	OrdersList->SetColumnWidth(0, 0);
 
-	// Col 2: nome cliente
+	// Col 2: Numero (id remoto)
+	OrdersList->AppendColumn(wxT("N°"));
+	OrdersList->SetColumnWidth(1, 60);
+
+	// Col 3: nome cliente
 	OrdersList->AppendColumn(wxT("Cliente"));
-	OrdersList->SetColumnWidth(1, 250);
+	OrdersList->SetColumnWidth(2, 450);
 	
-	// Col 3: data creazione
+	// Col 4: data creazione
 	OrdersList->AppendColumn(wxT("Data"));
-	OrdersList->SetColumnWidth(2, 150);
+	OrdersList->SetColumnWidth(3, 150);
 
-	// Col 4: Id remoto
-	OrdersList->AppendColumn(wxT("Id"));
-	OrdersList->SetColumnWidth(3, 0);
-	
-	
 	OrdersList->Show();
 
-	// iterator
+	// aggiungo gli ordini alla lista
 	for (auto & iit = orders.cbegin(); iit != orders.cend(); iit++)
 	{
 		auto o = *iit;
@@ -129,6 +166,7 @@ void OrdersView::updateList(const std::vector<Order>& orders)
 		// col 1: Id
 		wxListItem listItem;
 		listItem.SetId(OrdersList->GetItemCount());
+		listItem.SetData(o.GetId());
 		long list_index = OrdersList->InsertItem(listItem);
 
 		UpdateListItem(list_index, o);
@@ -142,22 +180,28 @@ OrdersView::~OrdersView()
 
 void OrdersView::NotifyNewOrders(size_t n)
 {
-	auto clr = btnCheckNew->GetBackgroundColour();
-	auto stl = btnCheckNew->GetBackgroundStyle();
+	//auto clr = btnCheckNew->GetBackgroundColour();
+	//auto stl = btnCheckNew->GetBackgroundStyle();
 
 	if (n > 0)
 	{
+		std::string x = (n == 1 ? "o" : "i");
+		std::string x2 = (n == 1 ? "e" : "i");
 		std::ostringstream ss;
-		ss << "Ci sono " << n << " ordini da scaricare";
-		SetStatusText(ss.str());
-		btnCheckNew->SetBackgroundColour(*wxRED);
+		ss << "Ricevut" << x << " " << n << " nuov" << x << " ordin" << x2;
+		Info(Utils::s2ws(ss.str()));
+		//std::ostringstream ss;
+		//ss << "Ci sono " << n << " ordini da scaricare";
+		//SetStatusText(ss.str());
+		//wxMessageBox(ss.str(), "Avviso", wxOK | wxICON_INFORMATION);
+		//btnCheckNew->SetBackgroundColour(*wxRED);
 	}
-	else
-	{
-		SetStatusText("Nessun nuovo ordine");
-		//btnCheckNew->SetBackgroundColour(wxColour(240, 240, 240));
-		btnCheckNew->SetBackgroundStyle(wxBG_STYLE_ERASE);
-	}
+	//else
+	//{
+	//	SetStatusText("Nessun nuovo ordine");
+	//	//btnCheckNew->SetBackgroundColour(wxColour(240, 240, 240));
+	//	btnCheckNew->SetBackgroundStyle(wxBG_STYLE_ERASE);
+	//}
 }
 
 void OrdersView::Info(std::wstring msg)
@@ -189,20 +233,19 @@ void OrdersView::UpdateListItem(int idx, const Order & order)
 
 	OrdersList->SetItem(idx, 0, std::to_wstring(order.GetId()));
 
-
-	// col 2: nome cliente
-	OrdersList->SetItem(idx, 1, order.GetCustomerName());
-
-	// Col 3: data creazione
-	std::wstring date, hour;
-	Utils::format_date(order.GetCreationDate(), date, hour);
-	OrdersList->SetItem(idx, 2, date.append(L" ").append(hour));
-
-
-	// Col 4: id remoto
+	// Col 2: id remoto
 	std::wstringstream s;
 	s << order.GetRemoteId();
-	OrdersList->SetItem(idx, 3, wxString(s.str()));
+	OrdersList->SetItem(idx, 1, wxString(s.str()));
+
+	// col 3: nome cliente
+	OrdersList->SetItem(idx, 2, order.GetCustomerName());
+
+	// Col 4: data creazione
+	std::wstring date, hour;
+	Utils::format_date(order.GetCreationDate(), date, hour);
+	OrdersList->SetItem(idx, 3, date.append(L" ").append(hour));
+
 }
 
 MyHtmlEasyPrinting * OrdersView::Printer()
