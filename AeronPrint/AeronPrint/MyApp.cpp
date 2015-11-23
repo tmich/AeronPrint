@@ -32,7 +32,7 @@ bool MyApp::OnInit()
 	if (!cfg.HasGroup(wxT("API")))
 	{
 		cfg.SetPath(wxT("/API"));
-		cfg.Write(wxT("Path"), "http://93.145.253.33:5000/api/v1.0/");
+		cfg.Write(wxT("Path"), "http://93.145.253.33/api/v1.0/");
 	}
 	
 	cfg.Flush();
