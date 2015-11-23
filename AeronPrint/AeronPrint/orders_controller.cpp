@@ -4,6 +4,8 @@
 #include "order_service.h"
 #include "formatters.h"
 #include "utils.h"
+#include <cstdlib>
+#include "config.h"
 
 OrdersController::OrdersController(OrdersView * ordersView)
 {
@@ -67,6 +69,9 @@ OrdersController::OrdersController(OrdersView * ordersView)
 	
 	// Menu binding
 	view_->Bind(wxEVT_MENU, [=](wxCommandEvent& event) {
+		auto dirname = Config::CONFIG_PATH;
+		std::ostringstream sstr;
+
 		switch (event.GetId())
 		{
 		case ID_ToggleTask:
@@ -81,6 +86,10 @@ OrdersController::OrdersController(OrdersView * ordersView)
 				view_->Info(L"Servizio disabilitato");
 			}
 			event.Skip();
+			break;
+		case wxID_PREFERENCES:
+			sstr << "explorer.exe " << dirname;
+			system(sstr.str().c_str());
 			break;
 		default:
 			event.Skip();

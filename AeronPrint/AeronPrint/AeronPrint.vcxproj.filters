@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="..\..\setup.iss" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AeronPrint.rc">

@@ -28,6 +28,7 @@ bool MyApp::OnInit()
 	
 	// open config file
 	Config cfg;
+	cfg.CONFIG_PATH = CONFIG_PATH;
 	if (!cfg.HasGroup(wxT("API")))
 	{
 		cfg.SetPath(wxT("/API"));

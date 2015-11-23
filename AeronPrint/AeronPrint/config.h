@@ -12,6 +12,7 @@ const std::string CONFIG_LOCALNAME = "config.ini";
 class Config : public wxFileConfig
 {
 public:
+	static std::string CONFIG_PATH;
 	Config();
 	~Config();
 };

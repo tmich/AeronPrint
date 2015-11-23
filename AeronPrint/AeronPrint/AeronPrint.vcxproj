@@ -197,6 +197,7 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\setup.iss" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
