@@ -19,21 +19,21 @@ std::wstring OrderHtmlFormatter::ToHtml()
 	std::wstring date, hour;
 	Utils::format_date(m_order.GetCreationDate(), date, hour);
 
-	txt << "<p>Ordine n. " << m_order.GetRemoteId() << "</p>";
-	txt << "<h2>" << m_order.GetCustomerName() << " [" << m_order.GetCustomerCode() << "]" << "</h2>";
+	txt << "<h2>Ordine n. " << m_order.GetRemoteId() << "</h2><hr />";
+	txt << "<h3>" << " [" << m_order.GetCustomerCode() << "]" << m_order.GetCustomerName() << "</h3>";
 	txt << "<b> Data invio: " << date << " alle " << hour << "</b>";
 	txt << "<table border=\"1\" width=\"100%\">";
-	txt << "<tr><td><b>Qta</b></td><td><b>Cod</b></td><td><b>Articolo</b></td></tr>";
+	txt << "<tr><td width=\"10%\"><b>Cod</b></td><td width=\"75%\"><b>Articolo</b></td><td><b>Qta</b></td></tr>";
 	for (auto & item : m_order.Items)
 	{
 		txt << "<tr>";
-		txt << "<td width=\"5%\">" << item.GetQty() << "</td>";
-		txt << "<td width=\"10%\">[" << item.GetCode() << "]</td>";
-		txt << "<td width=\"55%\">" << item.GetName() << "</td>";
+		txt << "<td>[" << item.GetCode() << "]</td>";
+		txt << "<td>" << item.GetName() << "</td>";
+		txt << "<td>" << item.GetQty() << "</td>";
 		txt << "</tr>";
 		if (item.GetNotes() != L"")
 		{
-			txt << "<tr><td>&#160;</td><td><font size=\"5\">&#160;&#160;&#10159;</font></td><td><b>Note:</b>" << item.GetNotes() << "</td></tr>";
+			txt << "<tr><td><font size=\"5\">&#160;&#160;&#10159;</font></td><td><b>Note:</b>" << item.GetNotes() << "</td><td>&#160;</td></tr>";
 		}
 	}
 	txt << "</table><br /><hr />";

@@ -104,7 +104,10 @@ OrdersController::OrdersController(OrdersView * ordersView)
 			view_->UpdateListItem(index, order);
 		}
 
-		view_->Printer()->PrintText(payload.str());
+		if (payload.str().size() > 0)
+		{
+			view_->Printer()->PrintText(payload.str());
+		}
 	});
 
 	//// LIST RIGHT CLICK
