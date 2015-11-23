@@ -22,7 +22,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=setup
+OutputBaseFilename={#MyAppName}Setup.{#MyAppVersion}
 Compression=lzma
 SolidCompression=yes
 
@@ -36,7 +36,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "C:\Users\Tiziano\Source\Repos\AeronPrint\AeronPrint\Release\AeronPrint.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Tiziano\Source\Repos\AeronPrint\AeronPrint\Release\cpprest140_2_6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Tiziano\AppData\Local\Temp\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "C:\Users\Tiziano\Documents\vc_redist.x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -44,6 +44,6 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{tmp}\vcredist_x86.exe"; Parameters: "/passive /Q:a /c:""msiexec /qb /i vcredist.msi"; StatusMsg: Installing 2015 RunTime...
+Filename: {tmp}\vc_redist.x86.exe; Parameters: "/q /passive /Q:a /c:""msiexec /q /i vcredist.msi"" "; StatusMsg: Installing VC++ 2015 RunTime...
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
