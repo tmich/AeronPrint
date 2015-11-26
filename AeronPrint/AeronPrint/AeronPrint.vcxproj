@@ -96,6 +96,9 @@
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw31ud_core.lib;wxbase31ud.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <Culture>0x0410</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -132,6 +135,9 @@
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wxmsw31u_core.lib;wxbase31u.lib;comctl32.lib;rpcrt4.lib;winmm.lib;advapi32.lib;wsock32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ResourceCompile>
+      <Culture>0x0410</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -174,6 +180,7 @@
     <ClInclude Include="sqlite3ext.h" />
     <ClInclude Include="sqlite_db.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aeron_client.cpp" />
@@ -195,6 +202,7 @@
     </ClCompile>
     <ClCompile Include="sqlite_db.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="version.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\setup.iss" />

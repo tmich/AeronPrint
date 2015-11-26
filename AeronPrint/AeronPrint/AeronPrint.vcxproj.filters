@@ -81,6 +81,9 @@
     <ClInclude Include="i_orders_controller.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyApp.cpp">
@@ -132,6 +135,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="i_orders_controller.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="version.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

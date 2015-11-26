@@ -1,6 +1,7 @@
 #include "orders_view.h"
 #include "utils.h"
 #include "formatters.h"
+#include "version.h"
 
 OrdersView::OrdersView(const wxString & title) 
 	: wxFrame(nullptr, wxID_ANY, title, wxPoint(-1, -1), wxSize(700, 550), wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN)
@@ -132,8 +133,10 @@ void OrdersView::OnExit(wxCommandEvent& event)
 
 void OrdersView::OnAbout(wxCommandEvent& event)
 {
-	wxMessageBox("AEG 2000",
-		"AEG 2000", wxOK | wxICON_INFORMATION);
+	Version version;
+	std::ostringstream ss;
+	ss << "Versione: " << version.ToString() << "\n";
+	wxMessageBox(ss.str(), "Informazioni su Aeron Print", wxOK | wxICON_INFORMATION);
 }
 
 void OrdersView::updateList(const std::vector<Order>& orders)

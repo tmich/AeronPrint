@@ -100,10 +100,9 @@ OrdersController::OrdersController(OrdersView * ordersView)
 
 	// PRINT SELECTED ORDERS
 	view_->btnPrint->Bind(wxEVT_BUTTON, [=](wxCommandEvent& WXUNUSED(event)) {
-		std::wostringstream payload;
-
 		for (int& index : view_->OrdersList->GetSelectedItems())
 		{
+			std::wostringstream payload;
 			int orderId = view_->OrdersList->GetItemData(index);
 			Order order = repo->Get(orderId);
 			OrderHtmlFormatter html(order);
@@ -111,11 +110,10 @@ OrdersController::OrdersController(OrdersView * ordersView)
 			order.IsRead(true);
 			repo->Update(order);
 			view_->UpdateListItem(index, order);
-		}
-
-		if (payload.str().size() > 0)
-		{
-			view_->Printer()->PrintText(payload.str());
+			if (payload.str().size() > 0)
+			{
+				view_->Printer()->PrintText(payload.str());
+			}
 		}
 	});
 
