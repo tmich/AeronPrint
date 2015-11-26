@@ -229,6 +229,7 @@ void OrdersView::UpdateListItem(int idx, const Order & order)
 		wxFont bold(*defaultFont);
 		bold.SetWeight(wxFONTWEIGHT_BOLD);
 		OrdersList->SetItemFont(idx, bold);
+		OrdersList->SetItemBackgroundColour(idx, wxColour("CYAN"));
 	}
 
 	OrdersList->SetItem(idx, 0, std::to_wstring(order.GetId()));
