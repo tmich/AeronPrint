@@ -39,8 +39,8 @@ OrdersController::OrdersController(OrdersView * ordersView)
 	}
 
 	// CHECKING NEW ORDERS: scheduled task
-	
-	create_timer_and_start(std::bind(&OrdersController::checkOrders, this), 10000);
+	Config cfg;
+	create_timer_and_start(std::bind(&OrdersController::checkOrders, this), cfg.PollingTime() * 1000);
 
 	// Binding
 	// ***********************

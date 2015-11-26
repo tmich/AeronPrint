@@ -29,10 +29,21 @@ bool MyApp::OnInit()
 	// open config file
 	Config cfg;
 	cfg.CONFIG_PATH = CONFIG_PATH;
+
+	/* API ADDRESS */
 	if (!cfg.HasGroup(wxT("API")))
 	{
 		cfg.SetPath(wxT("/API"));
 		cfg.Write(wxT("Path"), "http://93.145.253.33/api/v1.0/");
+	}
+
+	/* POLLING TIME */
+	cfg.SetPath(wxT("/API"));
+	auto PollingTime = cfg.ReadLong(wxT("PollingTime"), 0);
+
+	if (PollingTime < 60)
+	{
+		cfg.Write(wxT("PollingTime"), 60);
 	}
 	
 	cfg.Flush();

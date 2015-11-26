@@ -193,7 +193,7 @@ void OrdersView::NotifyNewOrders(size_t n)
 		//std::ostringstream ss;
 		//ss << "Ci sono " << n << " ordini da scaricare";
 		//SetStatusText(ss.str());
-		//wxMessageBox(ss.str(), "Avviso", wxOK | wxICON_INFORMATION);
+		wxMessageBox(ss.str(), "Avviso", wxOK | wxICON_INFORMATION);
 		//btnCheckNew->SetBackgroundColour(*wxRED);
 	}
 	//else

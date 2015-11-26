@@ -15,5 +15,8 @@ public:
 	static std::string CONFIG_PATH;
 	Config();
 	~Config();
+
+	std::wstring ApiPath();
+	long PollingTime();
 };
 
