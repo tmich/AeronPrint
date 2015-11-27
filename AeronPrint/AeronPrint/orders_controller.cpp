@@ -21,7 +21,7 @@ OrdersController::OrdersController(OrdersView * ordersView)
 	{
 		//auto orders = orderService.GetAllOrders();
 		auto orders = repo->GetAll();
-		orderPaginator = new Paginator<Order>(orders, 15);
+		orderPaginator = new OrderPaginator(orders, 15);
 
 		view_->Update(orderPaginator->Page(0));
 		view_->Info(Utils::s2ws("Caricamento effettuato"));
@@ -110,6 +110,7 @@ OrdersController::OrdersController(OrdersView * ordersView)
 			order.IsRead(true);
 			repo->Update(order);
 			view_->UpdateListItem(index, order);
+			orderPaginator->Update(order);
 			if (payload.str().size() > 0)
 			{
 				view_->Printer()->PrintText(payload.str());
@@ -150,6 +151,7 @@ OrdersController::OrdersController(OrdersView * ordersView)
 
 			order.IsRead(true);
 			repo->Update(order);
+			orderPaginator->Update(order);
 			view_->UpdateListItem(idx, order);
 			event.Veto();
 		}
@@ -185,7 +187,7 @@ void OrdersController::checkOrders()
 		{
 			repo->AddAll(new_orders);
 			auto orders = repo->GetAll();
-			orderPaginator = new Paginator<Order>(orders, 15);
+			orderPaginator = new OrderPaginator(orders, 15);
 			view_->Update(orderPaginator->Page(0));
 			view_->NotifyNewOrders(sz);
 		}

@@ -171,6 +171,7 @@
     <ClInclude Include="OrderListCtrl.h" />
     <ClInclude Include="orders_controller.h" />
     <ClInclude Include="order_generator.h" />
+    <ClInclude Include="order_paginator.h" />
     <ClInclude Include="order_repository.h" />
     <ClInclude Include="order_service.h" />
     <ClInclude Include="paginator.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="OrderListCtrl.cpp" />
     <ClCompile Include="orders_controller.cpp" />
     <ClCompile Include="order_generator.cpp" />
+    <ClCompile Include="order_paginator.cpp" />
     <ClCompile Include="order_repository.cpp" />
     <ClCompile Include="order_service.cpp" />
     <ClCompile Include="query_constraints.cpp" />

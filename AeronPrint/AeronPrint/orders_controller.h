@@ -1,6 +1,6 @@
 #pragma once
 #include "orders_view.h"
-#include "paginator.h"
+#include "order_paginator.h"
 #include "order_repository.h"
 #include <agents.h>
 
@@ -13,7 +13,7 @@ protected:
 	concurrency::timer<int> * polling_timer;
 
 	OrdersView * view_;
-	Paginator<Order> * orderPaginator;
+	OrderPaginator * orderPaginator;
 	OrderRepository * repo;
 
 	void checkOrders();
