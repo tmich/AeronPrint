@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "AeronPrint"
-#define MyAppVersion "1.1"
+#define MyAppVersion "1.1.1"
 #define MyAppPublisher "AEG2000 srl"
 #define MyAppURL "http://www.aeg2000srl.it/"
 #define MyAppExeName "AeronPrint.exe"
