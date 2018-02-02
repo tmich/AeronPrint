@@ -34,7 +34,7 @@ bool MyApp::OnInit()
 	if (!cfg.HasGroup(wxT("API")))
 	{
 		cfg.SetPath(wxT("/API"));
-		cfg.Write(wxT("Path"), "http://93.150.25.179/api/v1.0/");
+		cfg.Write(wxT("Path"), "http://80.211.2.91/api/v1.0/");
 	}
 
 	/* POLLING TIME */

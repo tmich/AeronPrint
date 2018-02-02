@@ -18,7 +18,11 @@ pplx::task<vector<Order>> AeronClient::GetAll(int lastId)
 		Config cfg;
 		std::wstringstream ws;
 		ws << cfg.ApiPath() << L"last_orders/" << lastId;
-		http_client client(ws.str());
+
+		// Create http_client to send the request.
+		http_client_config config;
+		config.set_timeout(utility::seconds(60));
+		http_client client(ws.str(), config);
 
 		return client.request(methods::GET);
 	}).then([](http_response response)
